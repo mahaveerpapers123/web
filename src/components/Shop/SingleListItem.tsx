@@ -42,12 +42,22 @@ const SingleListItem = ({ item }: { item: Product }) => {
       })
     );
   };
-
+  const imageUrl =
+    item.imgs && item.imgs.thumbnails && item.imgs.thumbnails.length > 0
+      ? item.imgs.thumbnails[0]
+      : "/images/placeholder.png";
   return (
     <div className="group rounded-lg bg-white shadow-1">
       <div className="flex">
         <div className="shadow-list relative overflow-hidden flex items-center justify-center max-w-[270px] w-full sm:min-h-[270px] p-4">
-          <Image src={item.imgs.previews[0]} alt="" width={250} height={250} />
+          {/* <Image src={item.imgs.previews[0]} alt="" width={250} height={250} /> */}
+          <Image 
+             src={imageUrl} 
+             alt={item.name} 
+             width={250} 
+             height={250} 
+             style={{ objectFit: 'contain' }} 
+           />
 
           <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0">
             <button

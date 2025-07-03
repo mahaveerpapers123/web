@@ -8,7 +8,22 @@ import {
 
 import Image from "next/image";
 
-const SingleItem = ({ item }) => {
+interface CartItem {
+  id: string; // ID is a string in the API
+  name: string;
+  price: number; // Price should be a number for calculations
+  quantity: number; 
+  images?: string[]; // Optional images array for product images
+  imgs?: { thumbnails: string[] } // Optional imgs property for thumbnails
+}
+
+interface SingleItemProps {
+  item: CartItem;
+  // Add other props if needed, like a remove function
+}
+
+
+const SingleItem = ({ item }: SingleItemProps) => {
   const [quantity, setQuantity] = useState(item.quantity);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -30,14 +45,21 @@ const SingleItem = ({ item }) => {
       return;
     }
   };
-
+  const imageUrl = item.images && item.images.length > 0 ? item.images[0] : "/images/placeholder.png";
   return (
     <div className="flex items-center border-t border-gray-3 py-5 px-7.5">
       <div className="min-w-[400px]">
         <div className="flex items-center justify-between gap-5">
           <div className="w-full flex items-center gap-5.5">
             <div className="flex items-center justify-center rounded-[5px] max-w-[80px] w-full h-17.5">
-              <Image width={200} height={200} src={item.imgs?.thumbnails[0]} alt="product" />
+              {/* <Image width={200} height={200} src={item.imgs?.thumbnails[0]} alt="product" /> */}
+              <Image 
+                width={80} 
+                height={80} 
+                src={imageUrl} 
+                alt={item.name || "Product image"}
+                style={{ objectFit: 'contain' }}
+              />
             </div>
 
             <div>
