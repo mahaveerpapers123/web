@@ -2,11 +2,20 @@ import { selectTotalPrice } from "@/redux/features/cart-slice";
 import { useAppSelector } from "@/redux/store";
 import React from "react";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 const OrderSummary = () => {
   const cartItems = useAppSelector((state) => state.cartReducer.items);
   const totalPrice = useSelector(selectTotalPrice);
-
+  const router = useRouter();
+  const handleProceedToCheckout = () => {
+    const orderData = {
+      items: cartItems,
+      total: totalPrice,
+    };
+    localStorage.setItem('checkoutOrder', JSON.stringify(orderData));
+    router.push('/checkout');
+  };
   return (
     <div className="lg:max-w-[455px] w-full">
       {/* <!-- order list box --> */}
@@ -35,11 +44,11 @@ const OrderSummary = () => {
           {cartItems.map((item, key) => (
             <div key={key} className="flex items-center justify-between py-5 border-b border-gray-3">
               <div>
-                <p className="text-white">{item.title}</p>
+                <p className="text-white">{item.name}</p>
               </div>
               <div>
                 <p className="text-white text-right">
-                  ₹{item.discountedPrice * item.quantity}
+                  ₹{item.price * item.quantity}
                 </p>
               </div>
             </div>
@@ -60,6 +69,7 @@ const OrderSummary = () => {
           {/* <!-- checkout button --> */}
           <button
             type="submit"
+            onClick={handleProceedToCheckout}
             className="w-full flex justify-center font-medium text-white bg-blue py-3 px-6 rounded-md ease-out duration-200 hover:bg-blue-dark mt-7.5"
           >
             Process to Checkout

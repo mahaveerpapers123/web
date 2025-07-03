@@ -6,7 +6,7 @@ import SearchForm from "../Blog/SearchForm";
 import LatestPosts from "../Blog/LatestPosts";
 import LatestProducts from "../Blog/LatestProducts";
 import Categories from "../Blog/Categories";
-import shopData from "../Shop/shopData"; 
+import {shopData} from "../Shop/shopData"; 
  
 const BlogGridWithSidebar = () => {
   const categories = [
@@ -210,10 +210,10 @@ const BlogGridWithSidebar = () => {
               <LatestPosts blogs={blogData} />
 
               {/* <!-- Latest Products box --> */}
-              <LatestProducts products={shopData} />
+              {/* <LatestProducts products={shopData} /> */}
 
               {/* <!-- Popular Category box --> */}
-              <Categories categories={categories} />
+              {/* <Categories categories={categories} /> */}
 
               {/* <!-- Tags box --> */}
               <div className="shadow-1 bg-white rounded-xl mt-7.5">

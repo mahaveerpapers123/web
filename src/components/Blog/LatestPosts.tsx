@@ -13,7 +13,7 @@ const LatestPosts = ({ blogs }) => {
         <div className="flex flex-col gap-6">
           {/* <!-- post item --> */}
 
-          {blogs.slice(0, 3).map((blog, key) => (
+          {blogs.map((blog, key) => (
             <div className="flex items-center gap-4" key={key}>
               <Link
                 href="/blogs/blog-details-with-sidebar"

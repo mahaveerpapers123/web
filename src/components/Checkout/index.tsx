@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Breadcrumb from "../Common/Breadcrumb";
 import Login from "./Login";
 import Shipping from "./Shipping";
@@ -7,8 +7,29 @@ import ShippingMethod from "./ShippingMethod";
 import PaymentMethod from "./PaymentMethod";
 import Coupon from "./Coupon";
 import Billing from "./Billing";
+// import CartItem from "@/redux/features/cart-slice";
+type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  images?: string[];
+};
 
+interface OrderData {
+  items: CartItem[];
+  total: number;
+}
 const Checkout = () => {
+  const [order, setOrder] = useState<OrderData | null>(null);
+  useEffect(() => {
+    const savedOrderData = localStorage.getItem('checkoutOrder');
+    
+    if (savedOrderData) {
+      const parsedData: OrderData = JSON.parse(savedOrderData);
+      setOrder(parsedData);
+    }
+  }, []);
   return (
     <>
       <Breadcrumb title={"Checkout"} pages={["checkout"]} />
@@ -19,7 +40,7 @@ const Checkout = () => {
               {/* <!-- checkout left --> */}
               <div className="lg:max-w-[670px] w-full">
                 {/* <!-- login box --> */}
-                <Login />
+                {/* <Login /> */}
 
                 {/* <!-- billing details --> */}
                 <Billing />
@@ -68,45 +89,26 @@ const Checkout = () => {
                       </div>
                     </div>
 
-                    {/* <!-- product item --> */}
-                    <div className="flex items-center justify-between py-5 border-b border-gray-3">
-                      <div>
-                        <p className="text-dark">iPhone 14 Plus , 6/128GB</p>
+                    {order?.items && order.items.length > 0 ? (
+                      order.items.map((item) => (
+                        <div key={item.id} className="flex items-center justify-between py-5 border-b border-gray-3">
+                          <div>
+                            <p className="text-dark">
+                              {item.name} <span className="font-semibold">x {item.quantity}</span>
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-dark text-right">
+                              ₹{Number(item.price) * item.quantity}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="py-5 text-center">
+                        <p className="text-dark-4">Your order is empty.</p>
                       </div>
-                      <div>
-                        <p className="text-dark text-right">$899.00</p>
-                      </div>
-                    </div>
-
-                    {/* <!-- product item --> */}
-                    <div className="flex items-center justify-between py-5 border-b border-gray-3">
-                      <div>
-                        <p className="text-dark">Asus RT Dual Band Router</p>
-                      </div>
-                      <div>
-                        <p className="text-dark text-right">$129.00</p>
-                      </div>
-                    </div>
-
-                    {/* <!-- product item --> */}
-                    <div className="flex items-center justify-between py-5 border-b border-gray-3">
-                      <div>
-                        <p className="text-dark">Havit HV-G69 USB Gamepad</p>
-                      </div>
-                      <div>
-                        <p className="text-dark text-right">$29.00</p>
-                      </div>
-                    </div>
-
-                    {/* <!-- product item --> */}
-                    <div className="flex items-center justify-between py-5 border-b border-gray-3">
-                      <div>
-                        <p className="text-dark">Shipping Fee</p>
-                      </div>
-                      <div>
-                        <p className="text-dark text-right">$15.00</p>
-                      </div>
-                    </div>
+                    )}
 
                     {/* <!-- total --> */}
                     <div className="flex items-center justify-between pt-5">
@@ -115,7 +117,7 @@ const Checkout = () => {
                       </div>
                       <div>
                         <p className="font-medium text-lg text-dark text-right">
-                          $1072.00
+                          ₹{order?.total?.toFixed(2) || '0.00'}
                         </p>
                       </div>
                     </div>

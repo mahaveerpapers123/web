@@ -11,13 +11,15 @@ import { useSelector } from "react-redux";
 import SingleItem from "./SingleItem";
 import Link from "next/link";
 import EmptyCart from "./EmptyCart";
+import { useRouter } from "next/navigation";
+import { LucideBluetoothConnected } from "lucide-react";
 
 const CartSidebarModal = () => {
   const { isCartModalOpen, closeCartModal } = useCartModalContext();
   const cartItems = useAppSelector((state) => state.cartReducer.items);
 
   const totalPrice = useSelector(selectTotalPrice);
-
+  const router = useRouter();
   useEffect(() => {
     // closing modal while clicking outside
     function handleClickOutside(event) {
@@ -34,6 +36,15 @@ const CartSidebarModal = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isCartModalOpen, closeCartModal]);
+
+  const handleProceedToCheckout = () => {
+    const orderData = {
+      items: cartItems,
+      total: totalPrice,
+    };
+    localStorage.setItem('checkoutOrder', JSON.stringify(orderData));
+    router.push('/checkout');
+  };
 
   return (
     <div
@@ -107,12 +118,12 @@ const CartSidebarModal = () => {
                 View Cart
               </Link>
 
-              <Link
-                href="/checkout"
+              <button
+                onClick={handleProceedToCheckout}
                 className="w-full flex justify-center font-medium text-white bg-dark py-[13px] px-6 rounded-md ease-out duration-200 hover:bg-opacity-95"
               >
                 Checkout
-              </Link>
+              </button>
             </div>
           </div>
         </div>

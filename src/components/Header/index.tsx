@@ -10,6 +10,8 @@ import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
 import Image from "next/image";
 
 const Header = () => {
+  const [menuData, setMenuData] = useState([]);
+  const [options, setOptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
@@ -30,94 +32,161 @@ const Header = () => {
     }
   };
 
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); 
+    if (searchQuery.trim()) {
+      localStorage.setItem('searchQuery', searchQuery);
+      window.location.href = '/shopping';
+    } else {
+      console.log("Search query is empty, not navigating.");
+    }
+  };
+
   useEffect(() => {
     window.addEventListener("scroll", handleStickyMenu);
-  });
+    return () => {
+      window.removeEventListener("scroll", handleStickyMenu);
+    };
+  }, []);
 
-  const menuData = [
-    {
-      title: "Stationery",
-      path: "/stationery",
-      submenu: [
-        { title: "Pens & Pencils", path: "/stationery/pens" },
-        { title: "Notebooks & Diaries", path: "/stationery/notebooks" },
-        { title: "Office Supplies", path: "/stationery/office" },
-      ],
-    },
-    {
-      title: "Art Supplies",
-      path: "/art-supplies",
-      submenu: [
-        { title: "Paints", path: "/art-supplies/paints" },
-        { title: "Brushes", path: "/art-supplies/brushes" },
-        { title: "Canvas", path: "/art-supplies/canvas" },
-      ],
-    },
-    {
-      title: "Craft Material",
-      path: "/craft-material",
-      submenu: [
-        {
-          title: "Acrylic & Wood",
-          path: "/craft-material/acrylic-wood",
-          submenu: [
-            { title: "Clock Making Material", path: "/craft-material/acrylic-wood/clock" },
-            { title: "Acrylic Sheets & Cutouts", path: "/craft-material/acrylic-wood/sheets" },
-            { title: "Sponge Brush & Roller", path: "/craft-material/acrylic-wood/brushes" },
-            { title: "Glass Message Bottles", path: "/craft-material/acrylic-wood/bottles" },
-            { title: "Magnets Buttons & Coins", path: "/craft-material/acrylic-wood/magnets" },
-          ],
-        },
-        { title: "Model making", path: "/craft-material/model-making" },
-        { title: "Papers", path: "/craft-material/papers" },
-      ],
-    },
-    {
-      title: "Journaling",
-      path: "/journaling",
-      submenu: [
-        { title: "Stickers", path: "/journaling/stickers" },
-        { title: "Washi Tapes", path: "/journaling/washi-tapes" },
-      ],
-    },
-    {
-      title: "Art Forms",
-      path: "/art-forms",
-      submenu: [
-          { title: "Mandala Art", path: "/art-forms/mandala" },
-          { title: "Resin Art", path: "/art-forms/resin" },
-      ]
-    },
-    {
-      title: "Office Stationery",
-      path: "/office-stationery",
-      submenu: [
-          { title: "Files & Folders", path: "/office-stationery/files" },
-          { title: "Desk Organizers", path: "/office-stationery/organizers" },
-      ]
-    },
-    { 
-      title: "Packaging supplies",
-      path: "/packaging-supplies",
-      submenu: [
-          { title: "Boxes", path: "/packaging-supplies/boxes" },
-          { title: "Tapes", path: "/packaging-supplies/tapes" },
-      ]
-    },
-    {
-      title: "Bulk Order",
-      path: "/bulk-order",
-    },
-  ];
+  useEffect(() => {
+    const fetchNavLinks = async () => {
+      try {
+        const response = await fetch("https://mahaveerbe.vercel.app/api/navlinks");
+        if (!response.ok) {
+          // throw new Error('Network response was not ok');
+          console.error("Failed to fetch navigation links");
+        }
+        const data = await response.json();
+        console.log(data);
+        setMenuData(data);
+        console.log("Fetched Navigation Links:", data);
+        console.log("Navigation Links:", data);
+      } catch (error) {
+        console.log("Failed to fetch navigation links:", error);
+      }
+    };
 
-  const options = [
-    { label: "All Categories", value: "0" },
-    { label: "Notebooks", value: "1" },
-    { label: "Pens & Pencils", value: "2" },
-    { label: "Files & Folders", value: "3" },
-    { label: "Art Supplies", value: "4" },
-    { label: "School Bags", value: "6" },
-  ];
+    fetchNavLinks();
+  }, []);
+
+  // const menuDataStatic = [
+  //   {
+  //     title: "Stationery",
+  //     path: "/stationery",
+  //     submenu: [
+  //       { title: "Pens & Pencils", path: "/stationery/pens" },
+  //       { title: "Notebooks & Diaries", path: "/stationery/notebooks" },
+  //       { title: "Office Supplies", path: "/stationery/office" },
+  //     ],
+  //   },
+  //   {
+  //     title: "Art Supplies",
+  //     path: "/art-supplies",
+  //     submenu: [
+  //       { title: "Paints", path: "/art-supplies/paints" },
+  //       { title: "Brushes", path: "/art-supplies/brushes" },
+  //       { title: "Canvas", path: "/art-supplies/canvas" },
+  //     ],
+  //   },
+  //   {
+  //     title: "Craft Material",
+  //     path: "/craft-material",
+  //     submenu: [
+  //       {
+  //         title: "Acrylic & Wood",
+  //         path: "/craft-material/acrylic-wood",
+  //         submenu: [
+  //           { title: "Clock Making Material", path: "/craft-material/acrylic-wood/clock" },
+  //           { title: "Acrylic Sheets & Cutouts", path: "/craft-material/acrylic-wood/sheets" },
+  //           { title: "Sponge Brush & Roller", path: "/craft-material/acrylic-wood/brushes" },
+  //           { title: "Glass Message Bottles", path: "/craft-material/acrylic-wood/bottles" },
+  //           { title: "Magnets Buttons & Coins", path: "/craft-material/acrylic-wood/magnets" },
+  //         ],
+  //       },
+  //       { title: "Model making", path: "/craft-material/model-making" },
+  //       { title: "Papers", path: "/craft-material/papers" },
+  //     ],
+  //   },
+  //   {
+  //     title: "Journaling",
+  //     path: "/journaling",
+  //     submenu: [
+  //       { title: "Stickers", path: "/journaling/stickers" },
+  //       { title: "Washi Tapes", path: "/journaling/washi-tapes" },
+  //     ],
+  //   },
+  //   {
+  //     title: "Art Forms",
+  //     path: "/art-forms",
+  //     submenu: [
+  //         { title: "Mandala Art", path: "/art-forms/mandala" },
+  //         { title: "Resin Art", path: "/art-forms/resin" },
+  //     ]
+  //   },
+  //   {
+  //     title: "Office Stationery",
+  //     path: "/office-stationery",
+  //     submenu: [
+  //         { title: "Files & Folders", path: "/office-stationery/files" },
+  //         { title: "Desk Organizers", path: "/office-stationery/organizers" },
+  //     ]
+  //   },
+  //   { 
+  //     title: "Packaging supplies",
+  //     path: "/packaging-supplies",
+  //     submenu: [
+  //         { title: "Boxes", path: "/packaging-supplies/boxes" },
+  //         { title: "Tapes", path: "/packaging-supplies/tapes" },
+  //     ]
+  //   },
+  //   {
+  //     title: "Bulk Order",
+  //     path: "/bulk-order",
+  //   },
+  // ];
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("https://mahaveerbe.vercel.app/api/categories");
+        if (!response.ok) {
+          // throw new Error('Network response was not ok for categories');
+          console.log("Failed to fetch categories");
+        }
+        const data = await response.json();
+        const uniqueCategories = Array.from(
+          new Map(data.map(item => [item.label, item])).values()
+        );
+
+        setOptions(uniqueCategories);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // const options = [
+  //   { label: "All Categories", value: "0" },
+  //   { label: "Notebooks", value: "1" },
+  //   { label: "Pens & Pencils", value: "2" },
+  //   { label: "Files & Folders", value: "3" },
+  //   { label: "Art Supplies", value: "4" },
+  //   { label: "School Bags", value: "6" },
+  // ];
+
+  const handleNavigation = (path: string) => {
+    const lastSlashIndex = path.lastIndexOf('/');
+    const lastPart = path.substring(lastSlashIndex + 1);
+    if (lastPart) {
+      localStorage.setItem('searchQuery', lastPart.substring(1, lastPart.length));
+      window.location.href = '/shopping';
+    } else {
+      console.warn("Could not extract a valid category from path:", path);
+    }
+  };
 
   return (
     <header
@@ -150,7 +219,7 @@ const Header = () => {
             </Link>
             
             <div className="max-w-[475px] w-full">
-              <form>
+              <form onSubmit={handleSearchSubmit}>
                 <div className="flex items-center">
                   <CustomSelect options={options} />
 
@@ -163,12 +232,13 @@ const Header = () => {
                       name="search"
                       id="search"
                       placeholder="I am shopping for..."
-                      autoComplete="off"
+                      autoComplete="on"
                       className="custom-search w-full rounded-r-[5px] bg-gray-1 !border-l-0 border border-gray-3 py-2.5 pl-4 pr-10 outline-none ease-in duration-200"
                     />
 
                     <button
                       id="search-btn"
+                      type="submit"
                       aria-label="Search"
                       className="flex items-center justify-center absolute right-3 top-1/2 -translate-y-1/2 ease-in duration-200 hover:text-blue"
                     >
@@ -384,14 +454,14 @@ const Header = () => {
                         key={i}
                         className="group relative before:w-0 before:h-[3px] before:bg-blue before:absolute before:left-0 before:top-0 before:rounded-b-[3px] before:ease-out before:duration-200 hover:before:w-full "
                       >
-                        <Link
-                          href={menuItem.path}
-                          className={`hover:text-blue text-custom-sm font-medium text-dark flex ${
-                            stickyMenu ? "xl:py-4" : "xl:py-6"
-                          }`}
+                        <button
+                            onClick={() => handleNavigation(menuItem.path)}
+                            className={`hover:text-blue text-custom-sm font-medium text-dark flex ${
+                                stickyMenu ? "xl:py-4" : "xl:py-6"
+                            }`}
                         >
-                          {menuItem.title}
-                        </Link>
+                            {menuItem.title}
+                        </button>
                       </li>
                     )
                   )}

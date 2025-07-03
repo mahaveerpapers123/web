@@ -2,12 +2,13 @@ import React from "react";
 
 const Billing = () => {
   return (
-    <div className="mt-9">
-      <h2 className="font-medium text-dark text-xl sm:text-2xl mb-5.5">
-        Billing details
-      </h2>
+    <div className="mt-0">
+      
 
       <div className="bg-white shadow-1 rounded-[10px] p-4 sm:p-8.5">
+        <h2 className="font-medium text-dark text-xl sm:text-2xl mb-5.5">
+          Billing details
+        </h2> <hr /> <br />
         <div className="flex flex-col lg:flex-row gap-5 sm:gap-8 mb-5">
           <div className="w-full">
             <label htmlFor="firstName" className="block mb-2.5">
@@ -58,7 +59,11 @@ const Billing = () => {
           </label>
 
           <div className="relative">
-            <select className="w-full bg-gray-1 rounded-md border border-gray-3 text-dark-4 py-3 pl-5 pr-9 duration-200 appearance-none outline-none focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20">
+            <select
+              id="countryName"
+              name="countryName"
+              className="w-full bg-gray-1 rounded-md border border-gray-3 text-dark-4 py-3 pl-5 pr-9 duration-200 appearance-none outline-none focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+            >
               <option value="0">Australia</option>
               <option value="1">America</option>
               <option value="2">England</option>

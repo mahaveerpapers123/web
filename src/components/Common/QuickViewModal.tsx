@@ -16,9 +16,10 @@ const QuickViewModal = () => {
   const [quantity, setQuantity] = useState(1);
 
   const dispatch = useDispatch<AppDispatch>();
-
-  // get the product data
-  const product = useAppSelector((state) => state.quickViewReducer.value);
+  
+    const product = useAppSelector((state: any) => state.quickViewReducer.value);
+  console.log("Product in QuickViewModal:", product);
+  console.log("Product ID in QuickViewModal:", product?.id);
 
   const [activePreview, setActivePreview] = useState(0);
 
@@ -40,7 +41,9 @@ const QuickViewModal = () => {
 
     closeModal();
   };
-
+  useEffect(() => {
+    setActivePreview(0);
+  }, [product?.id]);
   useEffect(() => {
     // closing modal while clicking outside
     function handleClickOutside(event) {
@@ -59,6 +62,10 @@ const QuickViewModal = () => {
       setQuantity(1);
     };
   }, [isModalOpen, closeModal]);
+
+  if (!isModalOpen || !product || !product.id) {
+    return null;
+  }
 
   return (
     <div
@@ -94,7 +101,7 @@ const QuickViewModal = () => {
             <div className="max-w-[526px] w-full">
               <div className="flex gap-5">
                 <div className="flex flex-col gap-5">
-                  {product.imgs.thumbnails?.map((img, key) => (
+                  {product.imgs?.thumbnails?.map((img, key) => (
                     <button
                       onClick={() => setActivePreview(key)}
                       key={key}
@@ -102,13 +109,7 @@ const QuickViewModal = () => {
                         activePreview === key && "border-2 border-blue"
                       }`}
                     >
-                      <Image
-                        src={img || ""}
-                        alt="thumbnail"
-                        width={61}
-                        height={61}
-                        className="aspect-square"
-                      />
+                      <Image src={img || "/images/placeholder.png"} alt="thumbnail" width={61} height={61} className="aspect-square object-contain" />
                     </button>
                   ))}
                 </div>
@@ -138,10 +139,11 @@ const QuickViewModal = () => {
                     </button> */}
 
                     <Image
-                      src={product?.imgs?.previews?.[activePreview]}
-                      alt="products-details"
+                      src={product.imgs?.previews?.[activePreview] || "/images/placeholder.png"}
+                      alt={product.name || "Product Details"}
                       width={400}
                       height={400}
+                      style={{objectFit: "contain"}}
                     />
                   </div>
                 </div>
@@ -154,7 +156,7 @@ const QuickViewModal = () => {
               </span>
 
               <h3 className="font-semibold text-xl xl:text-heading-5 text-dark mb-4">
-                {product.title}
+                {product.name}
               </h3>
 
               <div className="flex flex-wrap items-center gap-5 mb-6">
@@ -314,10 +316,11 @@ const QuickViewModal = () => {
 
                   <span className="flex items-center gap-2">
                     <span className="font-semibold text-dark text-xl xl:text-heading-4">
-                      ₹{product.discountedPrice}
+                      {/* ₹{product.discountedPrice} */}
+                      ₹{product.price}
                     </span>
                     <span className="font-medium text-dark-4 text-lg xl:text-2xl line-through">
-                      ₹{product.price}
+                      ₹{product.price / 0.8}
                     </span>
                   </span>
                 </div>

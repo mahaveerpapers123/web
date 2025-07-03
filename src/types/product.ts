@@ -1,5 +1,5 @@
 export type Product = {
-  title: string;
+  name?: string;
   discription?: string;
   reviews: number;
   price: number;
