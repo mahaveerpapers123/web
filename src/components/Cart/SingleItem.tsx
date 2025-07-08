@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from "react";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
@@ -53,7 +54,7 @@ const SingleItem = ({ item }: SingleItemProps) => {
           <div className="w-full flex items-center gap-5.5">
             <div className="flex items-center justify-center rounded-[5px] max-w-[80px] w-full h-17.5">
               {/* <Image width={200} height={200} src={item.imgs?.thumbnails[0]} alt="product" /> */}
-              <Image 
+              <img 
                 width={80} 
                 height={80} 
                 src={imageUrl} 

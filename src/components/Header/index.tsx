@@ -471,9 +471,9 @@ const Header = () => {
 
             <div className="hidden xl:block">
               <ul className="flex items-center gap-5.5">
-                <li hidden className="py-4">
+                <li className="py-4">
                   <a
-                    href="#"
+                    href="/orderHistory"
                     className="flex items-center gap-1.5 font-medium text-custom-sm text-dark hover:text-blue"
                   >
                     <svg
@@ -493,7 +493,7 @@ const Header = () => {
                         fill=""
                       />
                     </svg>
-                    Recently Viewed
+                    Order Tracking
                   </a>
                 </li>
 
