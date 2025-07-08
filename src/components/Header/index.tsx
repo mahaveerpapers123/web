@@ -465,6 +465,14 @@ const Header = () => {
                       </li>
                     )
                   )}
+                  <li className="relative group py-4">
+                    <button
+                      onClick={() => handleNavigation("/orderHistory")}
+                      className="hover:text-blue text-custom-sm font-medium text-dark flex"
+                    >
+                      Orders Tracking
+                    </button>
+                  </li>
                 </ul>
               </nav>
             </div>
