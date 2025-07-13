@@ -29,6 +29,15 @@ const SingleItem = ({ item }: { item: Product }) => {
         quantity: 1,
       })
     );
+    localStorage.setItem(
+      "cartItems",
+      JSON.stringify({
+        ...item,
+        id: String(item.id),
+        name: item.name ?? "",
+        quantity: 1,
+      })
+    );
   };
 
   const handleItemToWishList = () => {
@@ -174,7 +183,8 @@ const SingleItem = ({ item }: { item: Product }) => {
             </svg>
           </button>
 
-          <button
+          {/* <button
+          hidden
             onClick={() => {
               handleItemToWishList();
             }}
@@ -197,7 +207,7 @@ const SingleItem = ({ item }: { item: Product }) => {
                 fill=""
               />
             </svg>
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

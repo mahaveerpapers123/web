@@ -30,6 +30,35 @@ const SingleGridItem = ({ item }: { item: Product }) => {
         quantity: 1,
       })
     );
+    const newItem = {
+    ...item,
+    id: String(item.id),
+    name: item.name ?? "",
+    quantity: 1,
+  };
+
+  let existingCart = [];
+  try {
+    const stored = localStorage.getItem("cartItems");
+    existingCart = stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error("Error parsing cartItems:", error);
+    existingCart = [];
+  }
+
+  const existingIndex = existingCart.findIndex((i: any) => i.id === newItem.id);
+
+  if (existingIndex !== -1) {
+    existingCart[existingIndex].quantity += 1;
+  } else {
+    existingCart.push(newItem);
+  }
+
+  localStorage.setItem("cartItems", JSON.stringify(existingCart));
+
+  dispatch(addItemToCart(newItem));
+
+  window.dispatchEvent(new CustomEvent("cartUpdated"));
   };
 
   const handleItemToWishList = () => {
@@ -95,7 +124,8 @@ const SingleGridItem = ({ item }: { item: Product }) => {
             Add to cart
           </button>
 
-          <button
+          {/* <button
+           hidden
             onClick={() => handleItemToWishList()}
             aria-label="button for favorite select"
             id="favOne"
@@ -116,7 +146,7 @@ const SingleGridItem = ({ item }: { item: Product }) => {
                 fill=""
               />
             </svg>
-          </button>
+          </button> */}
         </div>
       </div>
 

@@ -23,14 +23,26 @@ const ProductItem = ({ item }: { item: Product }) => {
 
   // add to cart
   const handleAddToCart = () => {
-    dispatch(
-      addItemToCart({
+    // dispatch(
+    //   addItemToCart({
+    //     ...item,
+    //     id: String(item.id),
+    //     name: item.name ?? "",
+    //     quantity: 1,
+    //   })
+    // );
+    localStorage.setItem(
+      "cartItems",
+      JSON.stringify({
         ...item,
         id: String(item.id),
         name: item.name ?? "",
         quantity: 1,
       })
     );
+    const cart = localStorage.getItem("cartItems");
+    console.log(cart ? "Item added to cart" : "Failed to add item to cart");
+    console.log("Item added to cart successfully: " + cart);
   };
 
   const handleItemToWishList = () => {
@@ -101,7 +113,8 @@ const ProductItem = ({ item }: { item: Product }) => {
             Add to cart
           </button>
 
-          <button
+          {/* <button
+          hidden
             onClick={() => handleItemToWishList()}
             aria-label="button for favorite select"
             id="favOne"
@@ -122,7 +135,7 @@ const ProductItem = ({ item }: { item: Product }) => {
                 fill=""
               />
             </svg>
-          </button>
+          </button> */}
         </div>
       </div>
 
