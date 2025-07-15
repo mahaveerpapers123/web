@@ -9,6 +9,7 @@ const OrderSummary = () => {
   const totalPrice = useSelector(selectTotalPrice);
   const router = useRouter();
   const handleProceedToCheckout = () => {
+    localStorage.removeItem("checkoutOrder");
     const orderData = {
       items: cartItems,
       total: totalPrice,

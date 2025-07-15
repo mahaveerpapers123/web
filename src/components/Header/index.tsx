@@ -16,9 +16,43 @@ const Header = () => {
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
   const { openCartModal } = useCartModalContext();
+  const [cartCount, setCartCount] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const product = useAppSelector((state) => state.cartReducer.items);
-  const totalPrice = useSelector(selectTotalPrice);
+  // const totalPrice = useSelector(selectTotalPrice);
+
+  useEffect(() => {
+    const updateCartInfo = () => {
+      if (typeof window === 'undefined') return;
+
+      let cart = [];
+      try {
+        const storedItems = localStorage.getItem('cartItems');
+        cart = storedItems ? JSON.parse(storedItems) : [];
+        if (!Array.isArray(cart)) {
+          cart = [];
+        }
+      } catch (e) {
+        console.error("Failed to parse cart data in Header", e);
+        cart = [];
+      }
+      
+      const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+      setCartCount(totalItems);
+
+      const totalValue = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+      setTotalPrice(totalValue);
+    };
+
+    updateCartInfo();
+
+    window.addEventListener('cartUpdated', updateCartInfo);
+
+    return () => {
+      window.removeEventListener('cartUpdated', updateCartInfo);
+    };
+  }, []);
 
   const handleOpenCartModal = () => {
     openCartModal();
@@ -178,10 +212,20 @@ const Header = () => {
   // ];
 
   const handleNavigation = (path: string) => {
+    // Close the mobile navigation menu whenever a link is clicked
+    setNavigationOpen(false);
+  
+    // Handle direct navigation paths that don't go to the shopping page
+    if (path === "/orderHistory" || path === "/bulk-order") {
+      window.location.href = path;
+      return;
+    }
+  
+    // The default behavior for other paths is to treat them as a search query
     const lastSlashIndex = path.lastIndexOf('/');
     const lastPart = path.substring(lastSlashIndex + 1);
     if (lastPart) {
-      localStorage.setItem('searchQuery', lastPart.substring(1, lastPart.length));
+      localStorage.setItem('searchQuery', lastPart);
       window.location.href = '/shopping';
     } else {
       console.warn("Could not extract a valid category from path:", path);
@@ -372,7 +416,8 @@ const Header = () => {
                     </svg>
 
                     <span className="flex items-center justify-center font-medium text-2xs absolute -right-2 -top-2.5 bg-blue w-4.5 h-4.5 rounded-full text-white">
-                      {product.length}
+                      {/* {product.length} */}
+                      {cartCount}
                     </span>
                   </span>
 
@@ -381,7 +426,8 @@ const Header = () => {
                       cart
                     </span>
                     <p className="font-medium text-custom-sm text-dark">
-                      ₹{totalPrice}
+                      {/* ₹{totalPrice} */}
+                      ₹{totalPrice.toFixed(2)}
                     </p>
                   </div>
                 </button>
@@ -465,7 +511,7 @@ const Header = () => {
                       </li>
                     )
                   )}
-                  <li className="relative group py-4">
+                  <li className="relative group py-4 xl:hidden">
                     <button
                       onClick={() => handleNavigation("/orderHistory")}
                       className="hover:text-blue text-custom-sm font-medium text-dark flex"

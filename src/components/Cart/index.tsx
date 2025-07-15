@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // "use client";
 // import React from "react";
 // import Discount from "./Discount";
@@ -133,6 +134,7 @@ interface CartItem {
   model_name?: string;
 }
 
+
 const SingleItem = ({ item, onRemove, onUpdateQuantity }: {
   item: CartItem;
   onRemove: (id: string) => void;
@@ -235,7 +237,18 @@ const Discount = () => (
 const EnhancedCartPage = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const router = useRouter();
-
+  const handleProceedToCheckout = () => {
+    localStorage.removeItem("checkoutOrder");
+    const subtotal = cartItems.reduce((acc, item) => acc + Number(item.price) * item.quantity, 0);
+    const shipping = subtotal > 500 ? 0 : 50;
+    const total = subtotal + shipping;
+    const orderData = {
+      items: cartItems,
+      total: total,
+    };
+    localStorage.setItem('checkoutOrder', JSON.stringify(orderData));
+    router.push('/checkout');
+  };
   useEffect(() => {
     const loadCartFromStorage = () => {
       if (typeof window !== "undefined") {
@@ -282,7 +295,7 @@ const EnhancedCartPage = () => {
   const handleClearCart = () => {
     if(window.confirm("Are you sure you want to clear the entire cart?")) updateCart([]);
   };
-  const handleProceedToCheckout = () => router.push('/checkout');
+  // const handleProceedToCheckout = () => router.push('/checkout');
 
   return (
     <div className="bg-gray-50 min-h-screen">
