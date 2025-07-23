@@ -2,6 +2,8 @@
 import Breadcrumb from "@/components/Common/Breadcrumb";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 
 const Signin = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,6 +17,8 @@ const Signin = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const router = useRouter();
+
 
   const handleOpenModal = (type) => {
     setModalType(type);
@@ -97,7 +101,34 @@ const Signin = () => {
                   <p>Enter your details below to continue</p>
                 </div>
 
-                <form>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById("b2c-email").value;
+                    const password = document.getElementById("b2c-password").value;
+
+                    try {
+                      const res = await fetch("http://localhost:5000/api/auth/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email, password, userType: "b2c" }),
+                      });
+
+                      const data = await res.json();
+
+                      if (res.ok) {
+                        localStorage.setItem("user", JSON.stringify(data));
+                        router.push("/");
+                      } else {
+                        alert(data.error || "Login failed");
+                      }
+                    } catch (err) {
+                      console.error(err);
+                      alert("Something went wrong");
+                    }
+                  }}
+                >
+
                   <div className="mb-5">
                     <label htmlFor="b2c-email" className="block mb-2.5">
                       Email
@@ -228,9 +259,8 @@ const Signin = () => {
           >
             <button
               onClick={handleCloseModal}
-              className={`absolute top-4 right-4 ${
-                modalType === "b2c" ? "text-gray-500" : "text-gray-300"
-              } hover:text-red-500`}
+              className={`absolute top-4 right-4 ${modalType === "b2c" ? "text-gray-500" : "text-gray-300"
+                } hover:text-red-500`}
             >
               <svg
                 className="w-6 h-6"
@@ -347,11 +377,10 @@ const Signin = () => {
                   <button
                     type="submit"
                     disabled={isResetting}
-                    className={`w-full flex justify-center items-center font-medium text-white py-3 px-6 rounded-lg ease-in-out duration-300 mt-6 ${
-                      isResetting
+                    className={`w-full flex justify-center items-center font-medium text-white py-3 px-6 rounded-lg ease-in-out duration-300 mt-6 ${isResetting
                         ? "bg-green-500 cursor-not-allowed"
                         : buttonColor
-                    }`}
+                      }`}
                   >
                     {isResetting ? (
                       <span className="flex items-center">

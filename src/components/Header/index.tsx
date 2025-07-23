@@ -10,6 +10,9 @@ import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
 import Image from "next/image";
 
 const Header = () => {
+  /* for sign in user name display */
+  const [userName, setUserName] = useState<string | null>(null);
+  /*  end  */
   const [menuData, setMenuData] = useState([]);
   const [options, setOptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,7 +40,7 @@ const Header = () => {
         console.error("Failed to parse cart data in Header", e);
         cart = [];
       }
-      
+
       const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
       setCartCount(totalItems);
 
@@ -66,8 +69,11 @@ const Header = () => {
     }
   };
 
+
+
+
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); 
+    event.preventDefault();
     if (searchQuery.trim()) {
       localStorage.setItem('searchQuery', searchQuery);
       window.location.href = '/shopping';
@@ -214,13 +220,13 @@ const Header = () => {
   const handleNavigation = (path: string) => {
     // Close the mobile navigation menu whenever a link is clicked
     setNavigationOpen(false);
-  
+
     // Handle direct navigation paths that don't go to the shopping page
     if (path === "/orderHistory" || path === "/bulk-order") {
       window.location.href = path;
       return;
     }
-  
+
     // The default behavior for other paths is to treat them as a search query
     const lastSlashIndex = path.lastIndexOf('/');
     const lastPart = path.substring(lastSlashIndex + 1);
@@ -231,26 +237,38 @@ const Header = () => {
       console.warn("Could not extract a valid category from path:", path);
     }
   };
+  /* code for the name diaplying of the user */
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        setUserName(parsed.name);
+      } catch (e) {
+        console.error("Invalid user data");
+      }
+    }
+  }, []);
+
+  /* end */
 
   return (
     <header
-      className={`fixed left-0 top-0 w-full z-9999 transition-all ease-in-out duration-300 ${
-        stickyMenu ? "shadow-lg" : ""
-      }`}
+      className={`fixed left-0 top-0 w-full z-9999 transition-all ease-in-out duration-300 ${stickyMenu ? "shadow-lg" : ""
+        }`}
       style={{
         background:
           "linear-gradient(to right, #ccfbf1,rgb(236, 236, 236), #fef9c3, #fecaca)",
       }}
-      // style={{
-      //   background:
-      //     "linear-gradient(to right,rgb(200, 200, 200),rgb(242, 242, 242),rgb(210, 210, 210),rgb(206, 206, 206))",
-      // }}
+    // style={{
+    //   background:
+    //     "linear-gradient(to right,rgb(200, 200, 200),rgb(242, 242, 242),rgb(210, 210, 210),rgb(206, 206, 206))",
+    // }}
     >
       <div className="max-w-[1170px] mx-auto px-4 sm:px-7.5 xl:px-0">
         <div
-          className={`flex flex-col lg:flex-row gap-5 items-end lg:items-center xl:justify-between ease-out duration-200 ${
-            stickyMenu ? "py-4" : "py-6"
-          }`}
+          className={`flex flex-col lg:flex-row gap-5 items-end lg:items-center xl:justify-between ease-out duration-200 ${stickyMenu ? "py-4" : "py-6"
+            }`}
         >
           <div className="xl:w-auto flex-col sm:flex-row w-full flex sm:justify-between sm:items-center gap-5 sm:gap-10">
             <Link className="flex-shrink-0" href="/">
@@ -261,7 +279,7 @@ const Header = () => {
                 height={2}
               />
             </Link>
-            
+
             <div className="max-w-[475px] w-full">
               <form onSubmit={handleSearchSubmit}>
                 <div className="flex items-center">
@@ -370,12 +388,14 @@ const Header = () => {
                   </svg>
 
                   <div>
-                    <span className="block text-2xs text-dark-4 uppercase">
-                      account
-                    </span>
-                    <p className="font-medium text-custom-sm text-dark">
-                      Sign In
-                    </p>
+                    <span className="block text-2xs text-dark-4 uppercase">account</span>
+                    {userName ? (
+                      <p className="font-medium text-custom-sm text-dark">Hi, {userName}</p>
+                    ) : (
+                      <Link href="/signin">
+                        <p className="font-medium text-custom-sm text-dark">Sign In</p>
+                      </Link>
+                    )}
                   </div>
                 </Link>
 
@@ -442,32 +462,27 @@ const Header = () => {
                 <span className="block relative cursor-pointer w-5.5 h-5.5">
                   <span className="du-block absolute right-0 w-full h-full">
                     <span
-                      className={`block relative top-0 left-0 bg-dark rounded-sm w-0 h-0.5 my-1 ease-in-out duration-200 delay-[0] ${
-                        !navigationOpen && "!w-full delay-300"
-                      }`}
+                      className={`block relative top-0 left-0 bg-dark rounded-sm w-0 h-0.5 my-1 ease-in-out duration-200 delay-[0] ${!navigationOpen && "!w-full delay-300"
+                        }`}
                     ></span>
                     <span
-                      className={`block relative top-0 left-0 bg-dark rounded-sm w-0 h-0.5 my-1 ease-in-out duration-200 delay-150 ${
-                        !navigationOpen && "!w-full delay-400"
-                      }`}
+                      className={`block relative top-0 left-0 bg-dark rounded-sm w-0 h-0.5 my-1 ease-in-out duration-200 delay-150 ${!navigationOpen && "!w-full delay-400"
+                        }`}
                     ></span>
                     <span
-                      className={`block relative top-0 left-0 bg-dark rounded-sm w-0 h-0.5 my-1 ease-in-out duration-200 delay-200 ${
-                        !navigationOpen && "!w-full delay-500"
-                      }`}
+                      className={`block relative top-0 left-0 bg-dark rounded-sm w-0 h-0.5 my-1 ease-in-out duration-200 delay-200 ${!navigationOpen && "!w-full delay-500"
+                        }`}
                     ></span>
                   </span>
 
                   <span className="block absolute right-0 w-full h-full rotate-45">
                     <span
-                      className={`block bg-dark rounded-sm ease-in-out duration-200 delay-300 absolute left-2.5 top-0 w-0.5 h-full ${
-                        !navigationOpen && "!h-0 delay-[0] "
-                      }`}
+                      className={`block bg-dark rounded-sm ease-in-out duration-200 delay-300 absolute left-2.5 top-0 w-0.5 h-full ${!navigationOpen && "!h-0 delay-[0] "
+                        }`}
                     ></span>
                     <span
-                      className={`block bg-dark rounded-sm ease-in-out duration-200 delay-400 absolute left-0 top-2.5 w-full h-0.5 ${
-                        !navigationOpen && "!h-0 dealy-200"
-                      }`}
+                      className={`block bg-dark rounded-sm ease-in-out duration-200 delay-400 absolute left-0 top-2.5 w-full h-0.5 ${!navigationOpen && "!h-0 dealy-200"
+                        }`}
                     ></span>
                   </span>
                 </span>
@@ -481,10 +496,9 @@ const Header = () => {
         <div className="max-w-[1170px] mx-auto px-4 sm:px-7.5 xl:px-0">
           <div className="flex items-center justify-between">
             <div
-              className={`w-[288px] absolute right-4 top-full xl:static xl:w-auto h-0 xl:h-auto invisible xl:visible xl:flex items-center justify-between ${
-                navigationOpen &&
+              className={`w-[288px] absolute right-4 top-full xl:static xl:w-auto h-0 xl:h-auto invisible xl:visible xl:flex items-center justify-between ${navigationOpen &&
                 `!visible bg-white shadow-lg border border-gray-3 !h-auto max-h-[400px] overflow-y-scroll rounded-md p-5`
-              }`}
+                }`}
             >
               <nav>
                 <ul className="flex xl:items-center flex-col xl:flex-row gap-5 xl:gap-6">
@@ -501,12 +515,11 @@ const Header = () => {
                         className="group relative before:w-0 before:h-[3px] before:bg-blue before:absolute before:left-0 before:top-0 before:rounded-b-[3px] before:ease-out before:duration-200 hover:before:w-full "
                       >
                         <button
-                            onClick={() => handleNavigation(menuItem.path)}
-                            className={`hover:text-blue text-custom-sm font-medium text-dark flex ${
-                                stickyMenu ? "xl:py-4" : "xl:py-6"
+                          onClick={() => handleNavigation(menuItem.path)}
+                          className={`hover:text-blue text-custom-sm font-medium text-dark flex ${stickyMenu ? "xl:py-4" : "xl:py-6"
                             }`}
                         >
-                            {menuItem.title}
+                          {menuItem.title}
                         </button>
                       </li>
                     )
