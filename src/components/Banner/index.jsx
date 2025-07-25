@@ -12,6 +12,7 @@ const Banner = () => {
       {/* <div className="absolute inset-0 bg-gradient-to-r from-white/30 to-white/10 backdrop-blur-sm" /> */}
 
       {/* Centered Content */}
+      
       <div className="relative z-10 text-center px-4 bg-white/70 p-6 rounded-md shadow-lg mt-35">
         <h1 className="text-2xl md:text-5xl font-extrabold text-gray-900 drop-shadow-lg">
           Mahaveer Paper Enterprises
