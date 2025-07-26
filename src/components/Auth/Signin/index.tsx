@@ -18,6 +18,9 @@ const Signin = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const router = useRouter();
+  const [b2cEmail, setB2cEmail] = useState("");
+const [b2cPassword, setB2cPassword] = useState("");
+
 
 
   const handleOpenModal = (type) => {
@@ -104,14 +107,14 @@ const Signin = () => {
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();
-                    const email = document.getElementById("b2c-email").value;
-                    const password = document.getElementById("b2c-password").value;
+                    //const email = document.getElementById("b2c-email").value;
+                    //const password = document.getElementById("b2c-password").value;
 
                     try {
-                      const res = await fetch("http://localhost:5000/api/auth/login", {
+                      const res = await fetch("https://mahaveerbe.vercel.app/api/auth/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ email, password, userType: "b2c" }),
+                        body: JSON.stringify({ b2cEmail, b2cPassword, userType: "b2c" }),
                       });
 
                       const data = await res.json();
@@ -134,10 +137,12 @@ const Signin = () => {
                       Email
                     </label>
                     <input
-                      type="email"
-                      name="b2c-email"
-                      id="b2c-email"
-                      placeholder="Enter your email"
+                       type="email"
+  name="b2c-email"
+  id="b2c-email"
+  placeholder="Enter your email"
+  value={b2cEmail}
+  onChange={(e) => setB2cEmail(e.target.value)}
                       className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
                     />
                   </div>
@@ -148,10 +153,11 @@ const Signin = () => {
                     </label>
                     <input
                       type="password"
-                      name="b2c-password"
-                      id="b2c-password"
-                      placeholder="Enter your password"
-                      autoComplete="on"
+  name="b2c-password"
+  id="b2c-password"
+  placeholder="Enter your password"
+  value={b2cPassword}
+  onChange={(e) => setB2cPassword(e.target.value)}
                       className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
                     />
                   </div>

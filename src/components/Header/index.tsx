@@ -284,7 +284,6 @@ useEffect(() => {
       }
     }
   }, []);
-
   /* end */
 
   return (
