@@ -71,6 +71,15 @@ const Header = () => {
 
 
 
+  const [hasMounted, setHasMounted] = useState(false);
+
+useEffect(() => {
+  setHasMounted(true);
+}, []);
+
+
+
+
 
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -186,7 +195,7 @@ const Header = () => {
   //   },
   // ];
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch("https://mahaveerbe.vercel.app/api/categories");
@@ -206,7 +215,33 @@ const Header = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, []); */
+
+  useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("/api/categories"); 
+
+      if (!response.ok) {
+        console.log("Failed to fetch categories. Status:", response.status);
+        return;
+      }
+
+      const data = await response.json();
+
+      const uniqueCategories = Array.from(
+        new Map(data.map(item => [item.label, item])).values()
+      );
+
+      setOptions(uniqueCategories);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  };
+
+  fetchCategories();
+}, []);
+
 
   // const options = [
   //   { label: "All Categories", value: "0" },
@@ -389,13 +424,16 @@ const Header = () => {
 
                   <div>
                     <span className="block text-2xs text-dark-4 uppercase">account</span>
-                    {userName ? (
-                      <p className="font-medium text-custom-sm text-dark">Hi, {userName}</p>
-                    ) : (
-                      <Link href="/signin">
-                        <p className="font-medium text-custom-sm text-dark">Sign In</p>
-                      </Link>
-                    )}
+                    {hasMounted && (
+  userName ? (
+    <p className="font-medium text-custom-sm text-dark">Hi, {userName}</p>
+  ) : (
+    <Link href="/signin">
+      <p className="font-medium text-custom-sm text-dark">Sign In</p>
+    </Link>
+  )
+)}
+
                   </div>
                 </Link>
 
