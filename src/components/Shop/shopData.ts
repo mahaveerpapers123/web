@@ -171,7 +171,7 @@ export const shopData = async (
   limit: number,
   category?: string | null
 ): Promise<ApiResponse> => {
-  const baseUrl = "https://mahaveerbe.vercel.app/api/products";
+  const baseUrl = "http://localhost:5000/api/products";
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
