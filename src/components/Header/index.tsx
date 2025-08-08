@@ -73,10 +73,9 @@ const Header = () => {
 
   const [hasMounted, setHasMounted] = useState(false);
 
-useEffect(() => {
-  setHasMounted(true);
-}, []);
-
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
 
 
@@ -218,29 +217,29 @@ useEffect(() => {
   }, []); */
 
   useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch("/api/categories"); 
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
 
-      if (!response.ok) {
-        console.log("Failed to fetch categories. Status:", response.status);
-        return;
+        if (!response.ok) {
+          console.log("Failed to fetch categories. Status:", response.status);
+          return;
+        }
+
+        const data = await response.json();
+
+        const uniqueCategories = Array.from(
+          new Map(data.map(item => [item.label, item])).values()
+        );
+
+        setOptions(uniqueCategories);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
       }
+    };
 
-      const data = await response.json();
-
-      const uniqueCategories = Array.from(
-        new Map(data.map(item => [item.label, item])).values()
-      );
-
-      setOptions(uniqueCategories);
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    }
-  };
-
-  fetchCategories();
-}, []);
+    fetchCategories();
+  }, []);
 
 
   // const options = [
@@ -272,18 +271,24 @@ useEffect(() => {
       console.warn("Could not extract a valid category from path:", path);
     }
   };
-  /* code for the name diaplying of the user */
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsed = JSON.parse(storedUser);
-        setUserName(parsed.name);
-      } catch (e) {
-        console.error("Invalid user data");
-      }
+  /* code for the name displaying of the user */
+useEffect(() => {
+  const storedUser = localStorage.getItem("user");
+  console.log("Stored User:", storedUser);
+  if (storedUser) {
+    try {
+      const parsed = JSON.parse(storedUser);
+      console.log("Parsed User:", parsed);
+      setUserName(parsed.name); 
+    } catch (e) {
+      console.error("Invalid user data", e);
     }
-  }, []);
+  }
+}, []);
+
+
+
+
   /* end */
 
   return (
@@ -424,15 +429,14 @@ useEffect(() => {
                   <div>
                     <span className="block text-2xs text-dark-4 uppercase">account</span>
                     {hasMounted && (
-  userName ? (
-    <p className="font-medium text-custom-sm text-dark">Hi, {userName}</p>
-  ) : (
-    <Link href="/signin">
-      <p className="font-medium text-custom-sm text-dark">Sign In</p>
-    </Link>
-  )
-)}
-
+                      userName ? (
+                        <p className="font-medium text-custom-sm text-dark">Hi, {userName}</p>
+                      ) : (
+                        <Link href="/signin">
+                          <p className="font-medium text-custom-sm text-dark">Sign In</p>
+                        </Link>
+                      )
+                    )}
                   </div>
                 </Link>
 

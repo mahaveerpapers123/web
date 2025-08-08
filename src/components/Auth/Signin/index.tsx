@@ -19,7 +19,7 @@ const Signin = () => {
   const [passwordError, setPasswordError] = useState("");
   const router = useRouter();
   const [b2cEmail, setB2cEmail] = useState("");
-const [b2cPassword, setB2cPassword] = useState("");
+  const [b2cPassword, setB2cPassword] = useState("");
 
 
 
@@ -114,8 +114,9 @@ const [b2cPassword, setB2cPassword] = useState("");
                       const res = await fetch("https://mahaveerbe.vercel.app/api/auth/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ b2cEmail, b2cPassword, userType: "b2c" }),
+                        body: JSON.stringify({ email: b2cEmail, password: b2cPassword, userType: "b2c" }),
                       });
+
 
                       const data = await res.json();
 
@@ -137,12 +138,12 @@ const [b2cPassword, setB2cPassword] = useState("");
                       Email
                     </label>
                     <input
-                       type="email"
-  name="b2c-email"
-  id="b2c-email"
-  placeholder="Enter your email"
-  value={b2cEmail}
-  onChange={(e) => setB2cEmail(e.target.value)}
+                      type="email"
+                      name="b2c-email"
+                      id="b2c-email"
+                      placeholder="Enter your email"
+                      value={b2cEmail}
+                      onChange={(e) => setB2cEmail(e.target.value)}
                       className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
                     />
                   </div>
@@ -153,11 +154,11 @@ const [b2cPassword, setB2cPassword] = useState("");
                     </label>
                     <input
                       type="password"
-  name="b2c-password"
-  id="b2c-password"
-  placeholder="Enter your password"
-  value={b2cPassword}
-  onChange={(e) => setB2cPassword(e.target.value)}
+                      name="b2c-password"
+                      id="b2c-password"
+                      placeholder="Enter your password"
+                      value={b2cPassword}
+                      onChange={(e) => setB2cPassword(e.target.value)}
                       className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
                     />
                   </div>
@@ -384,8 +385,8 @@ const [b2cPassword, setB2cPassword] = useState("");
                     type="submit"
                     disabled={isResetting}
                     className={`w-full flex justify-center items-center font-medium text-white py-3 px-6 rounded-lg ease-in-out duration-300 mt-6 ${isResetting
-                        ? "bg-green-500 cursor-not-allowed"
-                        : buttonColor
+                      ? "bg-green-500 cursor-not-allowed"
+                      : buttonColor
                       }`}
                   >
                     {isResetting ? (
