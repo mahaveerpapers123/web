@@ -166,28 +166,53 @@ interface ApiResponse {
   total: number;
   items: Product[];
 }
+
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:5000";
+
 export const shopData = async (
   page: number,
   limit: number,
   category?: string | null
 ): Promise<ApiResponse> => {
-  const baseUrl = "http://localhost:5000/api/products";
   const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
+    page: String(page),
+    limit: String(limit),
+  });
+  if (category && category !== "all") params.append("category", category);
+
+  const res = await fetch(`${API_BASE}/api/products?${params.toString()}`, {
+    // credentials: "include", // uncomment if your API needs cookies
+    headers: { "Accept": "application/json" },
+    cache: "no-store",
   });
 
-  if (category) {
-    params.append('category', category);
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Failed to fetch products (${res.status}): ${text}`);
   }
 
-  const response = await fetch(`${baseUrl}?${params.toString()}`);
+  const data: ApiResponse = await res.json();
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch products');
+  // ✅ Ensure images is always an array
+  data.items = data.items.map((p) => ({
+    ...p,
+    images: Array.isArray(p.images)
+      ? p.images
+      : (() => {
+          try {
+            return JSON.parse(String(p.images));
+          } catch {
+            return [];
+          }
+        })(),
+  }));
+
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem("products", JSON.stringify(data.items));
+    } catch {}
   }
 
-  const data: ApiResponse = await response.json();
-  localStorage.setItem("products", JSON.stringify(data.items));
   return data;
 };
