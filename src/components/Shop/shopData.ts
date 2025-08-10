@@ -170,6 +170,21 @@ interface ApiResponse {
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:5000";
 
+const imagesToArray = (val: unknown): string[] => {
+  if (Array.isArray(val)) return val.map(String);
+  if (typeof val === "string") {
+    const trimmed = val.trim();
+    if (!trimmed) return [];
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) return parsed.map(String);
+    } catch {}
+    if (trimmed.includes(",")) return trimmed.split(",").map(s => s.trim()).filter(Boolean);
+    return [trimmed];
+  }
+  return [];
+};
+
 export const shopData = async (
   page: number,
   limit: number,
@@ -182,8 +197,7 @@ export const shopData = async (
   if (category && category !== "all") params.append("category", category);
 
   const res = await fetch(`${API_BASE}/api/products?${params.toString()}`, {
-    // credentials: "include", // uncomment if your API needs cookies
-    headers: { "Accept": "application/json" },
+    headers: { Accept: "application/json" },
     cache: "no-store",
   });
 
@@ -194,19 +208,10 @@ export const shopData = async (
 
   const data: ApiResponse = await res.json();
 
-  // ✅ Ensure images is always an array
   data.items = data.items.map((p) => ({
     ...p,
-    images: Array.isArray(p.images)
-      ? p.images
-      : (() => {
-          try {
-            return JSON.parse(String(p.images));
-          } catch {
-            return [];
-          }
-        })(),
-  }));
+    images: imagesToArray((p as any).images),
+  })) as Product[];
 
   if (typeof window !== "undefined") {
     try {
