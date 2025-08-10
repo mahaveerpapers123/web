@@ -22,8 +22,6 @@ interface OrderData {
 
 const Checkout = () => {
   const [order, setOrder] = useState<OrderData | null>(null);
-  const [billingAddr, setBillingAddr] = useState<any>(null);
-  const [shippingAddr, setShippingAddr] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState<string>("Cash on Delivery");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -36,20 +34,32 @@ const Checkout = () => {
     }
   }, []);
 
-  const handleCheckout = async (e: React.FormEvent) => {
+  const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!order || order.items.length === 0) {
       setMessage("Your cart is empty.");
       return;
     }
-    if (!billingAddr) {
+
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+
+    const firstName = String(fd.get("firstName") || "").trim();
+    const lastName = String(fd.get("lastName") || "").trim();
+    const email = String(fd.get("email") || "").trim();
+    const line1 = String(fd.get("address") || "").trim();
+    const line2 = String(fd.get("addressTwo") || "").trim();
+    const city = String(fd.get("town") || "").trim();
+    const countrySelect = String(fd.get("countryName") || "").trim();
+    const countryText = String(fd.get("country") || "").trim();
+    const country = countrySelect || countryText;
+    const phone = String(fd.get("phone") || "").trim();
+
+    if (!firstName || !lastName || !email || !line1 || !city || !country || !phone) {
       setMessage("Please fill in your billing details.");
       return;
     }
-
-    const hasShipping = shippingAddr && Object.keys(shippingAddr).length > 0;
-    const shippingToSend = hasShipping ? shippingAddr : billingAddr;
 
     setLoading(true);
     setMessage("");
@@ -69,26 +79,30 @@ const Checkout = () => {
         };
       });
 
+      const billing = {
+        name: `${firstName} ${lastName}`.trim(),
+        email,
+        address: {
+          line1,
+          line2,
+          city,
+          country,
+          phone
+        }
+      };
+
       const payload = {
-        billing: {
-          name: billingAddr.fullName,
-          email: billingAddr.email,
-          address: billingAddr.address,
-        },
-        shipping: {
-          address: shippingToSend.address,
-        },
-        payment: {
-          method: paymentMethod,
-        },
+        billing,
+        shipping: { address: billing.address },
+        payment: { method: paymentMethod },
         items: itemsPayload,
-        total: order.total,
+        total: order.total
       };
 
       const res = await fetch("http://localhost:5000/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
 
       const raw = await res.text();
@@ -102,17 +116,12 @@ const Checkout = () => {
         console.log("Order response:", data);
         localStorage.removeItem("checkoutOrder");
         setOrder({ items: [], total: 0 });
-        setBillingAddr(null);
-        setShippingAddr(null);
         setPaymentMethod("Cash on Delivery");
-        const billingResetEvent = new CustomEvent("reset-billing-form");
-        const shippingResetEvent = new CustomEvent("reset-shipping-form");
-        window.dispatchEvent(billingResetEvent);
-        window.dispatchEvent(shippingResetEvent);
+        form.reset();
+        window.dispatchEvent(new CustomEvent("reset-billing-form"));
+        window.dispatchEvent(new CustomEvent("reset-shipping-form"));
       } else {
-        throw new Error(
-          `Checkout failed (${res.status}): ${data?.message || raw || res.statusText}`
-        );
+        throw new Error(`Checkout failed (${res.status}): ${data?.message || raw || res.statusText}`);
       }
     } catch (err: any) {
       console.error(err);
@@ -130,8 +139,8 @@ const Checkout = () => {
           <form onSubmit={handleCheckout}>
             <div className="flex flex-col lg:flex-row gap-7.5 xl:gap-11">
               <div className="lg:max-w-[670px] w-full">
-                <Billing onChange={setBillingAddr} />
-                <Shipping onChange={setShippingAddr} />
+                <Billing />
+                <Shipping />
                 <div className="bg-white shadow-1 rounded-[10px] p-4 sm:p-8.5 mt-7.5">
                   <label htmlFor="notes" className="block mb-2.5">
                     Other Notes (optional)
@@ -158,17 +167,20 @@ const Checkout = () => {
                     </div>
 
                     {order?.items?.length ? (
-                      order.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center justify-between py-5 border-b border-gray-3"
-                        >
-                          <p className="text-dark">
-                            {item.name} <span className="font-semibold">x {item.quantity}</span>
-                          </p>
-                          <p className="text-dark text-right">₹{item.price * item.quantity}</p>
-                        </div>
-                      ))
+                      order.items.map((item) => {
+                        const sub = Number(item.price) * item.quantity;
+                        return (
+                          <div
+                            key={item.id}
+                            className="flex items-center justify-between py-5 border-b border-gray-3"
+                          >
+                            <p className="text-dark">
+                              {item.name} <span className="font-semibold">x {item.quantity}</span>
+                            </p>
+                            <p className="text-dark text-right">₹{sub}</p>
+                          </div>
+                        );
+                      })
                     ) : (
                       <p className="py-5 text-center text-dark-4">Your order is empty.</p>
                     )}
@@ -184,7 +196,7 @@ const Checkout = () => {
 
                 <Coupon />
                 <ShippingMethod />
-                <PaymentMethod onChange={setPaymentMethod} />
+                <PaymentMethod />
 
                 <button
                   type="submit"
