@@ -19,14 +19,14 @@ const ProductItem = ({ item }: { item: Product }) => {
   };
 
   const handleAddToCart = () => {
-    let existingCart = [];
+    let existingCart: any[] = [];
     try {
       const stored = JSON.parse(localStorage.getItem("cartItems") || "[]");
       existingCart = Array.isArray(stored) ? stored : [];
     } catch {
       existingCart = [];
     }
-    const itemIndex = existingCart.findIndex((i: any) => i.id === item.id);
+    const itemIndex = existingCart.findIndex((i: any) => String(i.id) === String(item.id));
     if (itemIndex > -1) {
       existingCart[itemIndex].quantity += 1;
     } else {
@@ -56,21 +56,21 @@ const ProductItem = ({ item }: { item: Product }) => {
     dispatch(updateproductDetails({ ...item }));
   };
 
+  const firstFromArray = Array.isArray((item as any).images) ? (item as any).images[0] : undefined;
+  const imagesMaybeString = !Array.isArray((item as any).images) ? ((item as any).images as unknown) : undefined;
+  const fallbackSingle = typeof imagesMaybeString === "string" ? imagesMaybeString : undefined;
   const imageUrl =
-    Array.isArray(item.images) && item.images.length > 0
-      ? item.images[0]
-      : "/images/placeholder.png";
+    (typeof firstFromArray === "string" && firstFromArray) ||
+    fallbackSingle ||
+    (typeof (item as any).image === "string" ? (item as any).image : undefined) ||
+    "/images/placeholder.png";
+
+  const priceNumber = typeof (item as any).price === "number" ? (item as any).price : Number((item as any).price || 0);
 
   return (
     <div className="group">
       <div className="relative overflow-hidden flex items-center justify-center rounded-lg bg-[#F6F7FB] min-h-[270px] mb-4">
-        <Image
-          src={imageUrl}
-          alt={item.name}
-          width={250}
-          height={250}
-          style={{ objectFit: "contain" }}
-        />
+        <Image src={imageUrl} alt={item.name ?? "product"} width={250} height={250} style={{ objectFit: "contain" }} />
         <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0">
           <button
             onClick={() => {
@@ -80,13 +80,7 @@ const ProductItem = ({ item }: { item: Product }) => {
             aria-label="button for quick view"
             className="flex items-center justify-center w-9 h-9 rounded-[5px] shadow-1 ease-out duration-200 text-dark bg-white hover:text-blue"
           >
-            <svg
-              className="fill-current"
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+            <svg className="fill-current" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -107,29 +101,23 @@ const ProductItem = ({ item }: { item: Product }) => {
           </button>
         </div>
       </div>
+
       <div className="flex items-center gap-2.5 mb-2">
         <div className="flex items-center gap-1">
           {[...Array(5)].map((_, idx) => (
-            <Image
-              key={idx}
-              src="/images/icons/icon-star.svg"
-              alt="star icon"
-              width={14}
-              height={14}
-            />
+            <Image key={idx} src="/images/icons/icon-star.svg" alt="star icon" width={14} height={14} />
           ))}
         </div>
-        <p className="text-custom-sm">({item.reviews})</p>
+        <p className="text-custom-sm">({(item as any).reviews ?? 0})</p>
       </div>
-      <h3
-        className="font-medium text-dark hover:text-blue mb-1.5"
-        onClick={handleProductDetails}
-      >
-        <Link href="/shop-details">{item.name}</Link>
+
+      <h3 className="font-medium text-dark hover:text-blue mb-1.5" onClick={handleProductDetails}>
+        <Link href="/shop-details">{item.name ?? ""}</Link>
       </h3>
+
       <span className="flex items-center gap-2 font-medium text-lg">
-        <span className="text-dark">₹{item.price}</span>
-        <span className="text-dark-4 line-through">₹{item.price / 0.8}</span>
+        <span className="text-dark">₹{priceNumber}</span>
+        <span className="text-dark-4 line-through">₹{priceNumber ? (priceNumber / 0.8).toFixed(2) : "0.00"}</span>
       </span>
     </div>
   );
