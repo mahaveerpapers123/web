@@ -14,24 +14,31 @@ const ProductItem = ({ item }: { item: Product }) => {
   const { openModal } = useModalContext();
   const dispatch = useDispatch<AppDispatch>();
 
-  // update QuickView
   const handleQuickViewUpdate = () => {
     dispatch(updateQuickView({ ...item }));
   };
 
-  // add to cart (localStorage for now)
   const handleAddToCart = () => {
-    localStorage.setItem(
-      "cartItems",
-      JSON.stringify({
+    let existingCart = [];
+    try {
+      const stored = JSON.parse(localStorage.getItem("cartItems") || "[]");
+      existingCart = Array.isArray(stored) ? stored : [];
+    } catch {
+      existingCart = [];
+    }
+    const itemIndex = existingCart.findIndex((i: any) => i.id === item.id);
+    if (itemIndex > -1) {
+      existingCart[itemIndex].quantity += 1;
+    } else {
+      existingCart.push({
         ...item,
         id: String(item.id),
         name: item.name ?? "",
         quantity: 1,
-      })
-    );
-    const cart = localStorage.getItem("cartItems");
-    console.log(cart ? "Item added to cart" : "Failed to add item to cart");
+      });
+    }
+    localStorage.setItem("cartItems", JSON.stringify(existingCart));
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const handleItemToWishList = () => {
@@ -49,7 +56,6 @@ const ProductItem = ({ item }: { item: Product }) => {
     dispatch(updateproductDetails({ ...item }));
   };
 
-  // ✅ Pick first DB image if available
   const imageUrl =
     Array.isArray(item.images) && item.images.length > 0
       ? item.images[0]
@@ -74,7 +80,6 @@ const ProductItem = ({ item }: { item: Product }) => {
             aria-label="button for quick view"
             className="flex items-center justify-center w-9 h-9 rounded-[5px] shadow-1 ease-out duration-200 text-dark bg-white hover:text-blue"
           >
-            {/* Eye Icon */}
             <svg
               className="fill-current"
               width="16"
@@ -94,7 +99,6 @@ const ProductItem = ({ item }: { item: Product }) => {
               />
             </svg>
           </button>
-
           <button
             onClick={handleAddToCart}
             className="inline-flex font-medium text-custom-sm py-[7px] px-5 rounded-[5px] bg-blue text-white hover:bg-blue-dark"
@@ -103,7 +107,6 @@ const ProductItem = ({ item }: { item: Product }) => {
           </button>
         </div>
       </div>
-
       <div className="flex items-center gap-2.5 mb-2">
         <div className="flex items-center gap-1">
           {[...Array(5)].map((_, idx) => (
@@ -118,14 +121,12 @@ const ProductItem = ({ item }: { item: Product }) => {
         </div>
         <p className="text-custom-sm">({item.reviews})</p>
       </div>
-
       <h3
         className="font-medium text-dark hover:text-blue mb-1.5"
         onClick={handleProductDetails}
       >
         <Link href="/shop-details">{item.name}</Link>
       </h3>
-
       <span className="flex items-center gap-2 font-medium text-lg">
         <span className="text-dark">₹{item.price}</span>
         <span className="text-dark-4 line-through">₹{item.price / 0.8}</span>
