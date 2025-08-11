@@ -70,7 +70,14 @@ const ProductItem = ({ item }: { item: Product }) => {
   return (
     <div className="group">
       <div className="relative overflow-hidden flex items-center justify-center rounded-lg bg-[#F6F7FB] min-h-[270px] mb-4">
-        <Image src={imageUrl} alt={item.name ?? "product"} width={250} height={250} style={{ objectFit: "contain" }} />
+        <Image
+          src={imageUrl}
+          alt={item.name ?? "product"}
+          width={250}
+          height={250}
+          style={{ objectFit: "contain" }}
+          unoptimized={imageUrl?.startsWith("data:image/")}
+        />
         <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0">
           <button
             onClick={() => {
@@ -101,7 +108,6 @@ const ProductItem = ({ item }: { item: Product }) => {
           </button>
         </div>
       </div>
-
       <div className="flex items-center gap-2.5 mb-2">
         <div className="flex items-center gap-1">
           {[...Array(5)].map((_, idx) => (
@@ -110,11 +116,9 @@ const ProductItem = ({ item }: { item: Product }) => {
         </div>
         <p className="text-custom-sm">({(item as any).reviews ?? 0})</p>
       </div>
-
       <h3 className="font-medium text-dark hover:text-blue mb-1.5" onClick={handleProductDetails}>
         <Link href="/shop-details">{item.name ?? ""}</Link>
       </h3>
-
       <span className="flex items-center gap-2 font-medium text-lg">
         <span className="text-dark">₹{priceNumber}</span>
         <span className="text-dark-4 line-through">₹{priceNumber ? (priceNumber / 0.8).toFixed(2) : "0.00"}</span>

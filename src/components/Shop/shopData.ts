@@ -214,10 +214,11 @@ export const shopData = async (
 
   const data: ApiResponse = await res.json();
 
-  // Ensure image URLs are absolute
   data.items = data.items.map((p) => {
     const imgs = imagesToArray((p as any).images).map((img) => {
-      if (img.startsWith("http")) return img;
+      if (img.startsWith("data:image/")) return img;
+      if (img.startsWith("http://")) return img.replace("http://", "https://");
+      if (img.startsWith("https://")) return img;
       return `${API_BASE}/${img.replace(/^\/+/, "")}`;
     });
     return { ...p, images: imgs };
