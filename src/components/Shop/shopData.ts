@@ -158,6 +158,7 @@
 
 // src/components/Shop/shopData.ts
 
+// src/components/Shop/shopData.ts
 import { Product } from "@/types/product";
 
 interface ApiResponse {
@@ -172,6 +173,8 @@ const API_BASE =
   (process.env.NODE_ENV === "production"
     ? "https://mahaveerbe.vercel.app"
     : "http://localhost:5000");
+
+const PROD_FILES_HOST = "https://mahaveerbe.vercel.app";
 
 const imagesToArray = (val: unknown): string[] => {
   if (Array.isArray(val)) return val.map(String);
@@ -188,6 +191,36 @@ const imagesToArray = (val: unknown): string[] => {
   return [];
 };
 
+const normalizeImages = (raw: unknown): string[] => {
+  const arr = imagesToArray(raw).filter(Boolean);
+
+  // Merge split base64: ["data:image/jpeg;base64", "<payload>"]
+  if (arr.length >= 2 && /^data:image\/\w+;base64$/i.test(arr[0]) && !arr[0].includes(",")) {
+    const merged = `${arr[0]},${arr[1]}`;
+    arr.splice(0, 2, merged);
+  }
+
+  return arr.map((url) => {
+    if (!url) return url;
+
+    if (url.startsWith("data:image/")) return url;
+
+    const localhostRe = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i;
+    if (localhostRe.test(url)) {
+      const withoutHost = url.replace(localhostRe, "");
+      return `${PROD_FILES_HOST}${withoutHost}`;
+    }
+
+    if (url.startsWith("http://mahaveerbe.vercel.app")) {
+      return url.replace("http://", "https://");
+    }
+
+    if (url.startsWith("https://")) return url;
+
+    return `${API_BASE}/${url.replace(/^\/+/, "")}`;
+  });
+};
+
 export const shopData = async (
   page: number,
   limit: number,
@@ -197,10 +230,7 @@ export const shopData = async (
     page: String(page),
     limit: String(limit),
   });
-
-  if (category && category !== "all") {
-    params.append("category", category);
-  }
+  if (category && category !== "all") params.append("category", category);
 
   const res = await fetch(`${API_BASE}/api/products?${params.toString()}`, {
     headers: { Accept: "application/json" },
@@ -214,15 +244,10 @@ export const shopData = async (
 
   const data: ApiResponse = await res.json();
 
-  data.items = data.items.map((p) => {
-    const imgs = imagesToArray((p as any).images).map((img) => {
-      if (img.startsWith("data:image/")) return img;
-      if (img.startsWith("http://")) return img.replace("http://", "https://");
-      if (img.startsWith("https://")) return img;
-      return `${API_BASE}/${img.replace(/^\/+/, "")}`;
-    });
-    return { ...p, images: imgs };
-  }) as Product[];
+  data.items = data.items.map((p) => ({
+    ...p,
+    images: normalizeImages((p as any).images),
+  })) as Product[];
 
   if (typeof window !== "undefined") {
     try {
