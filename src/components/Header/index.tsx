@@ -11,7 +11,8 @@ import Image from "next/image";
 
 const Header = () => {
   /* for sign in user name display */
-  const [userName, setUserName] = useState<string | null>(null);
+  const [userName, setUserName] = useState("");
+const [hasMounted, setHasMounted] = useState(false);
   /*  end  */
   const [menuData, setMenuData] = useState([]);
   const [options, setOptions] = useState([]);
@@ -24,6 +25,15 @@ const Header = () => {
 
   const product = useAppSelector((state) => state.cartReducer.items);
   // const totalPrice = useSelector(selectTotalPrice);
+
+
+  useEffect(() => {
+  setHasMounted(true);
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  if (storedUser && storedUser.name) {
+    setUserName(storedUser.name);
+  }
+}, []);
 
   useEffect(() => {
     const updateCartInfo = () => {
@@ -71,12 +81,7 @@ const Header = () => {
 
 
 
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
+ 
 
 
 
@@ -272,19 +277,19 @@ const Header = () => {
     }
   };
   /* code for the name displaying of the user */
-useEffect(() => {
-  const storedUser = localStorage.getItem("user");
-  console.log("Stored User:", storedUser);
-  if (storedUser) {
-    try {
-      const parsed = JSON.parse(storedUser);
-      console.log("Parsed User:", parsed);
-      setUserName(parsed.name); 
-    } catch (e) {
-      console.error("Invalid user data", e);
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    console.log("Stored User:", storedUser);
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        console.log("Parsed User:", parsed);
+        setUserName(parsed.name);
+      } catch (e) {
+        console.error("Invalid user data", e);
+      }
     }
-  }
-}, []);
+  }, []);
 
 
 
@@ -430,11 +435,13 @@ useEffect(() => {
                     <span className="block text-2xs text-dark-4 uppercase">account</span>
                     {hasMounted && (
                       userName ? (
-                        <p className="font-medium text-custom-sm text-dark">Hi, {userName}</p>
+                        <p className="font-medium text-custom-sm text-dark">
+                          Hi, {userName}
+                        </p>
                       ) : (
-                        <Link href="/signin">
-                          <p className="font-medium text-custom-sm text-dark">Sign In</p>
-                        </Link>
+                        <p className="font-medium text-custom-sm text-dark">
+                          Sign In
+                        </p>
                       )
                     )}
                   </div>

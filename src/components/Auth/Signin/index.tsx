@@ -114,7 +114,11 @@ const Signin = () => {
                       const res = await fetch("https://mahaveerbe.vercel.app/api/auth/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ email: b2cEmail, password: b2cPassword, userType: "b2c" }),
+                        body: JSON.stringify({
+                          b2cEmail: b2cEmail,
+                          b2cPassword: b2cPassword,
+                          userType: "b2c"
+                        }),
                       });
 
 
