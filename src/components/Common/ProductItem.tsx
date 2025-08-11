@@ -87,7 +87,7 @@ const ProductItem = ({ item }: { item: Product }) => {
             aria-label="button for quick view"
             className="flex items-center justify-center w-9 h-9 rounded-[5px] shadow-1 ease-out duration-200 text-dark bg-white hover:text-blue"
           >
-            <svg className="fill-current" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <svg className="fill-current" width="16" height="16" viewBox="0 0 16 16">
               <path
                 fillRule="evenodd"
                 clipRule="evenodd"
