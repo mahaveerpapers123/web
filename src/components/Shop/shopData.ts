@@ -167,8 +167,12 @@ interface ApiResponse {
   items: Product[];
 }
 
+// Base API URL will change automatically based on environment
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
+  (process.env.NODE_ENV === "production"
+    ? "https://mahaveerbe.vercel.app" // change to your Vercel backend URL
+    : "http://localhost:5000");
 
 const imagesToArray = (val: unknown): string[] => {
   if (Array.isArray(val)) return val.map(String);
@@ -194,7 +198,10 @@ export const shopData = async (
     page: String(page),
     limit: String(limit),
   });
-  if (category && category !== "all") params.append("category", category);
+
+  if (category && category !== "all") {
+    params.append("category", category);
+  }
 
   const res = await fetch(`${API_BASE}/api/products?${params.toString()}`, {
     headers: { Accept: "application/json" },

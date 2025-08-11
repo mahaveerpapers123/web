@@ -26,6 +26,12 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
+    (process.env.NODE_ENV === "production"
+      ? "https://mahaveerbe.vercel.app"
+      : "http://localhost:5000");
+
   useEffect(() => {
     const savedOrderData = localStorage.getItem("checkoutOrder");
     if (savedOrderData) {
@@ -99,17 +105,24 @@ const Checkout = () => {
         total: order.total
       };
 
-      const res = await fetch("http://localhost:5000/api/checkout", {
+      /*const res = await fetch("http://localhost:5000/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
+      }); */
+
+
+      const res = await fetch(`${API_BASE}/api/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       const raw = await res.text();
       let data: any = null;
       try {
         data = raw ? JSON.parse(raw) : null;
-      } catch {}
+      } catch { }
 
       if (res.status >= 200 && res.status < 300) {
         setMessage("Order placed successfully!");

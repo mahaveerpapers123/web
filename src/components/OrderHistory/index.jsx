@@ -8,6 +8,13 @@ const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
+    (process.env.NODE_ENV === "production"
+      ? "https://mahaveerbe.vercel.app"
+      : "http://localhost:5000");
+
   /*useEffect(() => {
     try {
       const storedOrderData = localStorage.getItem('checkoutOrder');
@@ -96,13 +103,21 @@ const OrderHistory = () => {
     const order = orders[0];
 
     try {
-      const response = await fetch('http://localhost:5000/api/orders', {
+      /*const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(order),
+      }); */
+      const response = await fetch(`${API_BASE}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(order),
       });
+
 
       if (!response.ok) {
         throw new Error('Failed to save order');
