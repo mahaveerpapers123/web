@@ -14,6 +14,7 @@ const Header = () => {
   const [userName, setUserName] = useState("");
 const [hasMounted, setHasMounted] = useState(false);
   /*  end  */
+  const API_BASE = "https://mahaveerbe.vercel.app";
   const [menuData, setMenuData] = useState([]);
   const [options, setOptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -199,7 +200,7 @@ const [hasMounted, setHasMounted] = useState(false);
   //   },
   // ];
 
-  /*useEffect(() => {
+  useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch("https://mahaveerbe.vercel.app/api/categories");
@@ -219,9 +220,9 @@ const [hasMounted, setHasMounted] = useState(false);
     };
 
     fetchCategories();
-  }, []); */
+  }, []); 
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch("/api/categories");
@@ -244,7 +245,7 @@ const [hasMounted, setHasMounted] = useState(false);
     };
 
     fetchCategories();
-  }, []);
+  }, []);  */
 
 
   // const options = [
