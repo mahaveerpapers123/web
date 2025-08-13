@@ -21,6 +21,27 @@ const Signin = () => {
   const [b2cEmail, setB2cEmail] = useState("");
   const [b2cPassword, setB2cPassword] = useState("");
 
+  /* logout handling */
+  const [user, setUser] = useState(null);
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    router.push("/");
+  };
+
+
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    console.log(storedUser);
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+
 
 
   const handleOpenModal = (type) => {
@@ -98,102 +119,132 @@ const Signin = () => {
             <div className="w-full lg:w-1/2">
               <div className="h-full rounded-xl bg-white shadow-1 p-4 sm:p-7.5 xl:p-11">
                 <div className="text-center mb-11">
-                  <h2 className="font-semibold text-xl sm:text-2xl xl:text-heading-5 text-dark mb-1.5">
-                    Customer Sign In
-                  </h2>
-                  <p>Enter your details below to continue</p>
+                  
+                    {user ? (
+                      <h2 className="font-semibold text-xl sm:text-2xl xl:text-heading-5 text-dark mb-1.5">
+                        Welcome, {user.username || user.email}
+                      </h2>
+                    ) : (
+                      <h2 className="font-semibold text-xl sm:text-2xl xl:text-heading-5 text-dark mb-1.5">
+                        Customer Sign In
+                      </h2>
+                    )}
+                  <p>{user ? "You are logged in" : "Enter your details below to continue"}</p>
                 </div>
 
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    //const email = document.getElementById("b2c-email").value;
-                    //const password = document.getElementById("b2c-password").value;
-
-                    try {
-                      const res = await fetch("https://mahaveerbe.vercel.app/api/auth/login", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          b2cEmail: b2cEmail,
-                          b2cPassword: b2cPassword,
-                          userType: "b2c"
-                        }),
-                      });
-
-
-                      const data = await res.json();
-
-                      if (res.ok) {
-                        localStorage.setItem("user", JSON.stringify(data));
-                        router.push("/");
-                      } else {
-                        alert(data.error || "Login failed");
-                      }
-                    } catch (err) {
-                      console.error(err);
-                      alert("Something went wrong");
-                    }
-                  }}
-                >
-
-                  <div className="mb-5">
-                    <label htmlFor="b2c-email" className="block mb-2.5">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="b2c-email"
-                      id="b2c-email"
-                      placeholder="Enter your email"
-                      value={b2cEmail}
-                      onChange={(e) => setB2cEmail(e.target.value)}
-                      className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
-                    />
-                  </div>
-
-                  <div className="mb-5">
-                    <label htmlFor="b2c-password" className="block mb-2.5">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      name="b2c-password"
-                      id="b2c-password"
-                      placeholder="Enter your password"
-                      value={b2cPassword}
-                      onChange={(e) => setB2cPassword(e.target.value)}
-                      className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full flex justify-center font-medium text-white bg-dark py-3 px-6 rounded-lg ease-out duration-200 hover:bg-blue mt-7.5"
-                  >
-                    Sign In to Account
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleOpenModal("b2c")}
-                    className="block w-full text-center text-dark-4 mt-4.5 ease-out duration-200 hover:text-dark"
-                  >
-                    Forget your password?
-                  </button>
-
-                  <p className="text-center mt-6">
-                    Don&#39;t have an account?
-                    <Link
-                      href="/signup"
-                      className="text-dark ease-out duration-200 hover:text-blue pl-2"
+                {user ? (
+                  <div className="flex flex-col items-center">
+                    <h2 className="font-semibold text-xl sm:text-2xl xl:text-heading-5 text-dark mb-1.5">
+                      Welcome, {user ? ` ${user.name || user.email}` : "Customer Sign In"}
+                    </h2>
+                    <button
+                      onClick={handleLogout}
+                      className="bg-blue-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      style={{ backgroundColor: '#2563EB', color: 'white' }}
                     >
-                      Sign Up Now!
-                    </Link>
-                  </p>
-                </form>
+                      Logout
+                    </button>
+
+
+                  </div>
+                ) : (
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+
+                      try {
+                        const res = await fetch("https://mahaveerbe.vercel.app/api/auth/login", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            b2cEmail: b2cEmail,
+                            b2cPassword: b2cPassword,
+                            userType: "b2c",
+                          }),
+                        });
+
+                        const data = await res.json();
+
+                        if (res.ok) {
+                          const userData = {
+                            name: data.name,
+                            userId: data.userId,
+                          };
+
+                          localStorage.setItem("user", JSON.stringify(userData));
+
+                          setUser(userData);
+
+                          router.push("/");
+                        } else {
+                          alert(data.error || "Login failed");
+                        }
+                      } catch (err) {
+                        console.error(err);
+                        alert("Something went wrong");
+                      }
+
+                    }}
+                  >
+                    <div className="mb-5">
+                      <label htmlFor="b2c-email" className="block mb-2.5">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="b2c-email"
+                        id="b2c-email"
+                        placeholder="Enter your email"
+                        value={b2cEmail}
+                        onChange={(e) => setB2cEmail(e.target.value)}
+                        className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                      />
+                    </div>
+
+                    <div className="mb-5">
+                      <label htmlFor="b2c-password" className="block mb-2.5">
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        name="b2c-password"
+                        id="b2c-password"
+                        placeholder="Enter your password"
+                        value={b2cPassword}
+                        onChange={(e) => setB2cPassword(e.target.value)}
+                        className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full flex justify-center font-medium text-white bg-dark py-3 px-6 rounded-lg ease-out duration-200 hover:bg-blue mt-7.5"
+                    >
+                      Sign In to Account
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleOpenModal("b2c")}
+                      className="block w-full text-center text-dark-4 mt-4.5 ease-out duration-200 hover:text-dark"
+                    >
+                      Forget your password?
+                    </button>
+
+                    <p className="text-center mt-6">
+                      Don&#39;t have an account?
+                      <Link
+                        href="/signup"
+                        className="text-dark ease-out duration-200 hover:text-blue pl-2"
+                      >
+                        Sign Up Now!
+                      </Link>
+                    </p>
+                  </form>
+                )}
               </div>
             </div>
+
 
             <div className="w-full lg:w-1/2">
               <div className="h-full rounded-xl bg-dark shadow-1 p-4 sm:p-7.5 xl:p-11">

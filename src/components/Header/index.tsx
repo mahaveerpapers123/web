@@ -13,6 +13,8 @@ const Header = () => {
   /* for sign in user name display */
   const [userName, setUserName] = useState("");
 const [hasMounted, setHasMounted] = useState(false);
+
+
   /*  end  */
   const API_BASE = "https://mahaveerbe.vercel.app";
   const [menuData, setMenuData] = useState([]);
@@ -102,6 +104,9 @@ const [hasMounted, setHasMounted] = useState(false);
       window.removeEventListener("scroll", handleStickyMenu);
     };
   }, []);
+
+
+
 
   useEffect(() => {
     const fetchNavLinks = async () => {
@@ -292,6 +297,25 @@ const [hasMounted, setHasMounted] = useState(false);
     }
   }, []);
 
+    useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUserName(parsedUser?.name || ""); // Set user name if exists
+      } catch (e) {
+        console.error("Error parsing user data from localStorage", e);
+        setUserName(""); // Default if error occurs
+      }
+    }
+  }, []);
+
+
+
+
+
+
+
 
 
 
@@ -433,19 +457,19 @@ const [hasMounted, setHasMounted] = useState(false);
                   </svg>
 
                   <div>
-                    <span className="block text-2xs text-dark-4 uppercase">account</span>
-                    {hasMounted && (
-                      userName ? (
-                        <p className="font-medium text-custom-sm text-dark">
-                          Hi, {userName}
-                        </p>
-                      ) : (
-                        <p className="font-medium text-custom-sm text-dark">
-                          Sign In
-                        </p>
-                      )
-                    )}
-                  </div>
+  <span className="block text-2xs text-dark-4 uppercase">account</span>
+  {/* Conditional render for userName */}
+  {userName ? (
+    <p className="font-medium text-custom-sm text-dark">
+      Hi, {userName}
+    </p>
+  ) : (
+    <p className="font-medium text-custom-sm text-dark">
+      Sign In
+    </p>
+  )}
+</div>
+
                 </Link>
 
                 <button
