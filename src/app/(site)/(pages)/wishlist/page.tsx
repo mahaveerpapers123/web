@@ -1,5 +1,5 @@
-{/*import React from "react";
-import { Wishlist } from "@/components/Wishlist";
+import React from "react";
+//import { Wishlist } from "@/components/Wishlist";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 const WishlistPage = () => {
   return (
     <main>
-      <Wishlist />
+      {/*<Wishlist /> */}
     </main>
   );
 };
 
-export default WishlistPage; */}
+export default WishlistPage; 
