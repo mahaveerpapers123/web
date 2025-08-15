@@ -49,12 +49,12 @@ export const menuData: Menu[] = [
         newTab: false,
         path: "/cart",
       },
-      /*{
+      {
         id: 66,
         title: "Wishlist",
         newTab: false,
         path: "/wishlist",
-      }, */
+      }, 
       {
         id: 67,
         title: "Sign in",
