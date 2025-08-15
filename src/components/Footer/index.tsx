@@ -204,28 +204,28 @@ const Footer = () => {
 
             <ul className="flex flex-col gap-3.5">
               <li>
-                <Link
+                <a
                   href="/signin"
                   className="ease-out duration-200 hover:text-blue"
                 >
                   My Account
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
+                <a
                   href="/signin"
                   className="ease-out duration-200 hover:text-blue"
                 >
                   Login / Register
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
+                <a
                   href="/cart"
                   className="ease-out duration-200 hover:text-blue"
                 >
                   Cart
-                </Link>
+                </a>
               </li>
               {/*<li>
                 <a className="ease-out duration-200 hover:text-blue" href="#">
