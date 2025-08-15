@@ -5,7 +5,7 @@ import { Product } from "@/types/product";
 import { useModalContext } from "@/app/context/QuickViewModalContext";
 import { updateQuickView } from "@/redux/features/quickView-slice";
 import { addItemToCart } from "@/redux/features/cart-slice";
-import { addItemToWishlist } from "@/redux/features/wishlist-slice";
+//import { addItemToWishlist } from "@/redux/features/wishlist-slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import Link from "next/link";
@@ -61,7 +61,7 @@ const SingleListItem = ({ item }: { item: Product }) => {
 
   window.dispatchEvent(new CustomEvent("cartUpdated"));
   };
-  const handleItemToWishList = () => {
+  /*const handleItemToWishList = () => {
     dispatch(
       addItemToWishlist({
         ...item,
@@ -70,7 +70,7 @@ const SingleListItem = ({ item }: { item: Product }) => {
         quantity: 1,
       })
     );
-  };
+  }; */
   const imageUrl =
     item.imgs && item.imgs.thumbnails && item.imgs.thumbnails.length > 0
       ? item.imgs.thumbnails[0]
@@ -89,7 +89,7 @@ const SingleListItem = ({ item }: { item: Product }) => {
            />
 
           <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0">
-            <button
+            {/*<button
               onClick={() => {
                 openModal();
                 handleQuickViewUpdate();
@@ -118,7 +118,7 @@ const SingleListItem = ({ item }: { item: Product }) => {
                   fill=""
                 />
               </svg>
-            </button>
+            </button> */}
 
             <button
               onClick={() => handleAddToCart()}

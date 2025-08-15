@@ -637,7 +637,7 @@ const [hasMounted, setHasMounted] = useState(false);
                   </a>
                 </li>
 
-                <li className="py-4" hidden>
+                {/*<li className="py-4" hidden>
                   <Link
                     href="/wishlist"
                     className="flex items-center gap-1.5 font-medium text-custom-sm text-dark hover:text-blue"
@@ -657,7 +657,7 @@ const [hasMounted, setHasMounted] = useState(false);
                     </svg>
                     Wishlist
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>

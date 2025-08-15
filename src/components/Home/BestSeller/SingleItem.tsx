@@ -8,7 +8,7 @@ import { updateQuickView } from "@/redux/features/quickView-slice";
 import { addItemToCart } from "@/redux/features/cart-slice";
 import Image from "next/image";
 import Link from "next/link";
-import { addItemToWishlist } from "@/redux/features/wishlist-slice";
+//import { addItemToWishlist } from "@/redux/features/wishlist-slice";
 
 const SingleItem = ({ item }: { item: Product }) => {
   const { openModal } = useModalContext();
@@ -40,7 +40,7 @@ const SingleItem = ({ item }: { item: Product }) => {
     );
   };
 
-  const handleItemToWishList = () => {
+  /*const handleItemToWishList = () => {
     dispatch(
       addItemToWishlist({
         ...item,
@@ -49,7 +49,7 @@ const SingleItem = ({ item }: { item: Product }) => {
         quantity: 1,
       })
     );
-  };
+  }; */
   const imageUrl =
     item.imgs && item.imgs.thumbnails && item.imgs.thumbnails.length > 0
       ? item.imgs.thumbnails[0]

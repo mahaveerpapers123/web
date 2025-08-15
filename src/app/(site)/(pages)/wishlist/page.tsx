@@ -1,4 +1,4 @@
-import React from "react";
+{/*import React from "react";
 import { Wishlist } from "@/components/Wishlist";
 import { Metadata } from "next";
 
@@ -16,4 +16,4 @@ const WishlistPage = () => {
   );
 };
 
-export default WishlistPage;
+export default WishlistPage; */}
