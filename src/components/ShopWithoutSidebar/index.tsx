@@ -31,11 +31,11 @@ const ShopWithoutSidebar = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const sortingOptions = [
+  /*const sortingOptions = [
     { label: "Latest Products", value: "latest" },
     { label: "Best Selling", value: "best-selling" },
     { label: "Old Products", value: "oldest" },
-  ];
+  ]; */
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -123,7 +123,7 @@ const ShopWithoutSidebar = () => {
               <div className="rounded-lg bg-white shadow-1 pl-3 pr-2.5 py-2.5 mb-6">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-wrap items-center gap-4">
-                    <CustomSelect options={sortingOptions} />
+                    {/*<CustomSelect options={sortingOptions} /> */}
                     <p>
                       Showing{" "}
                       <span className="text-dark">

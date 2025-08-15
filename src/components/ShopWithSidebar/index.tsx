@@ -69,11 +69,11 @@ const ShopWithSidebar = () => {
     }
   };
 
-  const options = [
+  /*const options = [
     { label: "Latest Products", value: "0" },
     { label: "Best Selling", value: "1" },
     { label: "Old Products", value: "2" },
-  ];
+  ]; */
 
   const categories = [
     {
@@ -294,7 +294,7 @@ const ShopWithSidebar = () => {
                 <div className="flex items-center justify-between">
                   {/* <!-- top bar left --> */}
                   <div className="flex flex-wrap items-center gap-4">
-                    <CustomSelect options={options} />
+                    {/*<CustomSelect options={options} /> */}
 
                     <p>
                       Showing <span className="text-dark">9 of 50</span>{" "}
