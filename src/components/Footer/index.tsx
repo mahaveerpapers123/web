@@ -204,19 +204,28 @@ const Footer = () => {
 
             <ul className="flex flex-col gap-3.5">
               <li>
-                <a className="ease-out duration-200 hover:text-blue" href="#">
+                <Link
+                  href="/signin"
+                  className="ease-out duration-200 hover:text-blue"
+                >
                   My Account
-                </a>
+                </Link>
               </li>
               <li>
-                <a className="ease-out duration-200 hover:text-blue" href="#">
+                <Link
+                  href="/signin"
+                  className="ease-out duration-200 hover:text-blue"
+                >
                   Login / Register
-                </a>
+                </Link>
               </li>
               <li>
-                <a className="ease-out duration-200 hover:text-blue" href="#">
+                <Link
+                  href="/cart"
+                  className="ease-out duration-200 hover:text-blue"
+                >
                   Cart
-                </a>
+                </Link>
               </li>
               {/*<li>
                 <a className="ease-out duration-200 hover:text-blue" href="#">
@@ -224,14 +233,14 @@ const Footer = () => {
                 </a>
               </li> */}
               <li>
-                <a className="ease-out duration-200 hover:text-blue" href="#">
+                <a className="ease-out duration-200 hover:text-blue" href="/">
                   Shop
                 </a>
               </li>
             </ul>
           </div>
 
-          <div className="w-full sm:w-auto">
+          {/*<div className="w-full sm:w-auto">
             <h2 className="mb-7.5 text-custom-1 font-medium text-dark">
               Quick Link
             </h2>
@@ -263,10 +272,10 @@ const Footer = () => {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* <div className="w-full sm:w-auto"> */}
-            {/* <Link className="flex-shrink-0" href="/">
+          {/* <Link className="flex-shrink-0" href="/">
               <Image
                 src="/images/logo/Mlogo.png"
                 alt="Logo"
@@ -274,7 +283,7 @@ const Footer = () => {
                 height={250}
               />
             </Link> */}
-            {/* <h2 className="mb-7.5 text-custom-1 font-medium text-dark lg:text-right">
+          {/* <h2 className="mb-7.5 text-custom-1 font-medium text-dark lg:text-right">
               Download App
             </h2>
 
@@ -337,17 +346,17 @@ const Footer = () => {
                 </a>
               </li>
             </ul> */}
-          </div>
         </div>
-        {/* <!-- footer menu end --> */}
+      </div>
+      {/* <!-- footer menu end --> */}
       {/* </div> */}
 
       {/* <!-- footer bottom start --> */}
       <div className="py-5 xl:py-7.5 bg-gray-1"
-      style={{
-        background:
-          "linear-gradient(to right,rgb(162, 197, 189),rgb(177, 201, 185),rgb(200, 196, 153),rgb(190, 151, 151))",
-      }}
+        style={{
+          background:
+            "linear-gradient(to right,rgb(162, 197, 189),rgb(177, 201, 185),rgb(200, 196, 153),rgb(190, 151, 151))",
+        }}
       >
         <div className="max-w-[1170px] mx-auto px-4 sm:px-8 xl:px-0">
           <div className="flex gap-5 flex-wrap items-center justify-between">
