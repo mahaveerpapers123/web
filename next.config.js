@@ -7,9 +7,9 @@ const nextConfig = {
       { protocol: 'http', hostname: '192.168.0.106', port: '5000', pathname: '/uploads/**' },
       { protocol: 'https', hostname: 'mahaveerbe.vercel.app', pathname: '/uploads/**' },
       { protocol: 'https', hostname: 'mahaveerbe.vercel.app', pathname: '/**' },
-      { protocol: 'https', hostname: 'encrypted-tbn1.gstatic.com', pathname: '/**' },
-    ],
-  },
+      { protocol: 'https', hostname: 'encrypted-tbn1.gstatic.com', pathname: '/**' }
+    ]
+  }
 };
 
 module.exports = nextConfig;

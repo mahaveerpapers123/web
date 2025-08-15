@@ -8,7 +8,7 @@ import GenderDropdown from "./GenderDropdown";
 import SizeDropdown from "./SizeDropdown";
 import ColorsDropdwon from "./ColorsDropdwon";
 import PriceDropdown from "./PriceDropdown";
-import {shopData} from "../Shop/shopData";
+import { shopData } from "../Shop/shopData";
 import SingleGridItem from "../Shop/SingleGridItem";
 import SingleListItem from "../Shop/SingleListItem";
 import { Product } from "@/types/product";
@@ -18,48 +18,48 @@ const ShopWithSidebar = () => {
   const [productStyle, setProductStyle] = useState("grid");
   const [products, setProducts] = useState<Product[]>([]);
   const [pagination, setPagination] = useState({
-      page: 1,
-      limit: 12,
-      total: 0,
-      totalPages: 1,
-    });
+    page: 1,
+    limit: 12,
+    total: 0,
+    totalPages: 1,
+  });
   const [productSidebar, setProductSidebar] = useState(false);
   const [stickyMenu, setStickyMenu] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   useEffect(() => {
-      const loadProducts = async () => {
-        setLoading(true);
-        setError(null);
-        
-        try {
-          const searchQuery = localStorage.getItem('searchQuery');
-          const currentPage = Number(searchParams.get('page')) || 1;
-  
-          const data = await shopData(currentPage, pagination.limit, searchQuery);
-  
-          setProducts(data.items || []);
-          setPagination(prev => ({
-            ...prev,
-            page: data.page,
-            total: data.total,
-            totalPages: Math.ceil(data.total / prev.limit),
-          }));
-  
-          if (searchQuery) {
-            localStorage.removeItem('searchQuery');
-          }
-        } catch (err: any) {
-          setError(err.message);
-          console.error(err);
-        } finally {
-          setLoading(false);
+    const loadProducts = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const searchQuery = localStorage.getItem('searchQuery');
+        const currentPage = Number(searchParams.get('page')) || 1;
+
+        const data = await shopData(currentPage, pagination.limit, searchQuery);
+
+        setProducts(data.items || []);
+        setPagination(prev => ({
+          ...prev,
+          page: data.page,
+          total: data.total,
+          totalPages: Math.ceil(data.total / prev.limit),
+        }));
+
+        if (searchQuery) {
+          localStorage.removeItem('searchQuery');
         }
-      };
-  
-      loadProducts();
-    }, [searchParams, pagination.limit]);
+      } catch (err: any) {
+        setError(err.message);
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, [searchParams, pagination.limit]);
 
   const handleStickyMenu = () => {
     if (window.scrollY >= 80) {
@@ -76,71 +76,71 @@ const ShopWithSidebar = () => {
   ];
 
   const categories = [
-      {
-        name: "Notebooks",
-        products: 25,
-        isRefined: true,
-      },
-      {
-        name: "Pens & Pencils",
-        products: 40,
-        isRefined: false,
-      },
-      {
-        name: "Files & Folders",
-        products: 18,
-        isRefined: false,
-      },
-      {
-        name: "Art Supplies",
-        products: 22,
-        isRefined: false,
-      },
-      {
-        name: "Diaries & Planners",
-        products: 15,
-        isRefined: false,
-      },
-      {
-        name: "School Bags",
-        products: 12,
-        isRefined: false,
-      },
-      {
-        name: "Geometry Boxes",
-        products: 10,
-        isRefined: false,
-      },
-      {
-        name: "Staplers & Punches",
-        products: 8,
-        isRefined: false,
-      },
-      {
-        name: "Markers & Highlighters",
-        products: 20,
-        isRefined: false,
-      },
-      {
-        name: "Craft Materials",
-        products: 14,
-        isRefined: false,
-      },
-      {
-        name: "Calculators",
-        products: 9,
-        isRefined: false,
-      },
-      {
-        name: "Glue & Adhesives",
-        products: 16,
-        isRefined: false,
-      },
-      {
-        name: "Erasers & Sharpeners",
-        products: 30,
-        isRefined: false,
-      }
+    {
+      name: "Notebooks",
+      products: 25,
+      isRefined: true,
+    },
+    {
+      name: "Pens & Pencils",
+      products: 40,
+      isRefined: false,
+    },
+    {
+      name: "Files & Folders",
+      products: 18,
+      isRefined: false,
+    },
+    {
+      name: "Art Supplies",
+      products: 22,
+      isRefined: false,
+    },
+    {
+      name: "Diaries & Planners",
+      products: 15,
+      isRefined: false,
+    },
+    {
+      name: "School Bags",
+      products: 12,
+      isRefined: false,
+    },
+    {
+      name: "Geometry Boxes",
+      products: 10,
+      isRefined: false,
+    },
+    {
+      name: "Staplers & Punches",
+      products: 8,
+      isRefined: false,
+    },
+    {
+      name: "Markers & Highlighters",
+      products: 20,
+      isRefined: false,
+    },
+    {
+      name: "Craft Materials",
+      products: 14,
+      isRefined: false,
+    },
+    {
+      name: "Calculators",
+      products: 9,
+      isRefined: false,
+    },
+    {
+      name: "Glue & Adhesives",
+      products: 16,
+      isRefined: false,
+    },
+    {
+      name: "Erasers & Sharpeners",
+      products: 30,
+      isRefined: false,
+    }
   ];
 
   const genders = [
@@ -208,7 +208,7 @@ const ShopWithSidebar = () => {
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><p>Loading products...</p></div>;
   }
-  
+
   if (error) {
     return <div className="flex justify-center items-center h-screen text-red-500"><p>Error: {error}</p></div>;
   }
@@ -223,20 +223,18 @@ const ShopWithSidebar = () => {
           <div className="flex gap-7.5">
             {/* <!-- Sidebar Start --> */}
             <div
-              className={`sidebar-content fixed xl:z-1 z-9999 left-0 top-0 xl:translate-x-0 xl:static max-w-[310px] xl:max-w-[270px] w-full ease-out duration-200 ${
-                productSidebar
+              className={`sidebar-content fixed xl:z-1 z-9999 left-0 top-0 xl:translate-x-0 xl:static max-w-[310px] xl:max-w-[270px] w-full ease-out duration-200 ${productSidebar
                   ? "translate-x-0 bg-white p-5 h-screen overflow-y-auto"
                   : "-translate-x-full"
-              }`}
+                }`}
             >
               <button
                 onClick={() => setProductSidebar(!productSidebar)}
                 aria-label="button for product sidebar toggle"
-                className={`xl:hidden absolute -right-12.5 sm:-right-8 flex items-center justify-center w-8 h-8 rounded-md bg-white shadow-1 ${
-                  stickyMenu
+                className={`xl:hidden absolute -right-12.5 sm:-right-8 flex items-center justify-center w-8 h-8 rounded-md bg-white shadow-1 ${stickyMenu
                     ? "lg:top-20 sm:top-34.5 top-35"
                     : "lg:top-24 sm:top-39 top-37"
-                }`}
+                  }`}
               >
                 <svg
                   className="fill-current"
@@ -309,11 +307,10 @@ const ShopWithSidebar = () => {
                     <button
                       onClick={() => setProductStyle("grid")}
                       aria-label="button for product grid tab"
-                      className={`${
-                        productStyle === "grid"
+                      className={`${productStyle === "grid"
                           ? "bg-blue border-blue text-white"
                           : "text-dark bg-gray-1 border-gray-3"
-                      } flex items-center justify-center w-10.5 h-9 rounded-[5px] border ease-out duration-200 hover:bg-blue hover:border-blue hover:text-white`}
+                        } flex items-center justify-center w-10.5 h-9 rounded-[5px] border ease-out duration-200 hover:bg-blue hover:border-blue hover:text-white`}
                     >
                       <svg
                         className="fill-current"
@@ -353,11 +350,10 @@ const ShopWithSidebar = () => {
                     <button
                       onClick={() => setProductStyle("list")}
                       aria-label="button for product list tab"
-                      className={`${
-                        productStyle === "list"
+                      className={`${productStyle === "list"
                           ? "bg-blue border-blue text-white"
                           : "text-dark bg-gray-1 border-gray-3"
-                      } flex items-center justify-center w-10.5 h-9 rounded-[5px] border ease-out duration-200 hover:bg-blue hover:border-blue hover:text-white`}
+                        } flex items-center justify-center w-10.5 h-9 rounded-[5px] border ease-out duration-200 hover:bg-blue hover:border-blue hover:text-white`}
                     >
                       <svg
                         className="fill-current"
@@ -386,59 +382,82 @@ const ShopWithSidebar = () => {
               </div>
 
               {/* <!-- Products Grid Tab Content Start --> */}
-              <div
-                className={`${
-                  productStyle === "grid"
-                    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-7.5 gap-y-9"
-                    : "flex flex-col gap-7.5"
-                }`}
-              >
-                {products.length > 0 ? (
-                <div className={`${ productStyle === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-7.5 gap-y-9" : "flex flex-col gap-7.5" }`}>
-                  {products.map((item) => productStyle === "grid" ? (<SingleGridItem item={item} key={item.id} />) : (<SingleListItem item={item} key={item.id} />))}
+              <div className="flex flex-col space-y-8">
+                <div
+                  className={
+                    productStyle === "grid"
+                      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-7.5 gap-y-9"
+                      : "flex flex-col gap-7.5"
+                  }
+                >
+                  {products.length > 0 ? (
+                    products.map((item) =>
+                      productStyle === "grid" ? (
+                        <SingleGridItem item={item} key={item.id} />
+                      ) : (
+                        <SingleListItem item={item} key={item.id} />
+                      )
+                    )
+                  ) : (
+                    <div className="col-span-full text-center py-20 bg-white rounded-lg">
+                      <h2 className="text-2xl font-semibold">No Products Found</h2>
+                      <p className="mt-2 text-gray-600">Try a different search or category.</p>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="text-center py-20 bg-white rounded-lg">
-                  <h2 className="text-2xl font-semibold">No Products Found</h2>
-                  <p className="mt-2 text-gray-600">Try a different search or category.</p>
-                </div>
-              )}
 
-              {pagination.totalPages > 1 && (
-                <div className="flex justify-center mt-15">
-                  <div className="bg-white shadow-1 rounded-md p-2">
-                    <ul className="flex items-center">
-                      <li>
-                        <button aria-label="Previous page" onClick={() => handlePageChange(pagination.page - 1)} disabled={pagination.page === 1} className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:bg-blue hover:text-white">
-                          <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.1782 16.1156C12.0095 16.1156 11.8407 16.0594 11.7282 15.9187L5.37197 9.45C5.11885 9.19687 5.11885 8.80312 5.37197 8.55L11.7282 2.08125C11.9813 1.82812 12.3751 1.82812 12.6282 2.08125C12.8813 2.33437 12.8813 2.72812 12.6282 2.98125L6.72197 9L12.6563 15.0187C12.9095 15.2719 12.9095 15.6656 12.6563 15.9187C12.4876 16.0312 12.347 16.1156 12.1782 16.1156Z" fill="" /></svg>
-                        </button>
-                      </li>
-                      
-                      {generatePageNumbers().map((p, index) => (
-                        <li key={index}>
-                          {p === '...' ? (
-                            <span className="flex py-1.5 px-3.5">...</span>
-                          ) : (
-                            <button onClick={() => handlePageChange(p as number)} className={`flex py-1.5 px-3.5 duration-200 rounded-[3px] ${ pagination.page === p ? "bg-blue text-white" : "hover:text-white hover:bg-blue" }`}>
-                              {p}
-                            </button>
-                          )}
+                {pagination.totalPages > 1 && (
+                  <div className="flex justify-center w-full">
+                    <div className="bg-white shadow-1 rounded-md p-2">
+                      <ul className="flex items-center">
+                        <li>
+                          <button
+                            aria-label="Previous page"
+                            onClick={() => handlePageChange(pagination.page - 1)}
+                            disabled={pagination.page === 1}
+                            className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:bg-blue hover:text-white"
+                          >
+                            <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18"><path d="M12.1782 16.1156C12.0095 16.1156 11.8407 16.0594 11.7282 15.9187L5.37197 9.45C5.11885 9.19687 5.11885 8.80312 5.37197 8.55L11.7282 2.08125C11.9813 1.82812 12.3751 1.82812 12.6282 2.08125C12.8813 2.33437 12.8813 2.72812 12.6282 2.98125L6.72197 9L12.6563 15.0187C12.9095 15.2719 12.9095 15.6656 12.6563 15.9187C12.4876 16.0312 12.347 16.1156 12.1782 16.1156Z" /></svg>
+                          </button>
                         </li>
-                      ))}
-
-                      <li>
-                        <button aria-label="Next page" onClick={() => handlePageChange(pagination.page + 1)} disabled={pagination.page === pagination.totalPages} className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:text-white hover:bg-blue">
-                          <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.82197 16.1156C5.65322 16.1156 5.5126 16.0594 5.37197 15.9469C5.11885 15.6937 5.11885 15.3 5.37197 15.0469L11.2782 9L5.37197 2.98125C5.11885 2.72812 5.11885 2.33437 5.37197 2.08125C5.6251 1.82812 6.01885 1.82812 6.27197 2.08125L12.6282 8.55C12.8813 8.80312 12.8813 9.19687 12.6282 9.45L6.27197 15.9187C6.15947 16.0312 5.99072 16.1156 5.82197 16.1156Z" fill="" /></svg>
-                        </button>
-                      </li>
-                    </ul>
+                        {generatePageNumbers().map((p, index) => (
+                          <li key={index}>
+                            {p === "..." ? (
+                              <span className="flex py-1.5 px-3.5">...</span>
+                            ) : (
+                              <button
+                                onClick={() => handlePageChange(p as number)}
+                                className={`flex py-1.5 px-3.5 duration-200 rounded-[3px] ${pagination.page === p ? "bg-blue text-white" : "hover:text-white hover:bg-blue"
+                                  }`}
+                              >
+                                {p}
+                              </button>
+                            )}
+                          </li>
+                        ))}
+                        <li>
+                          <button
+                            aria-label="Next page"
+                            onClick={() => handlePageChange(pagination.page + 1)}
+                            disabled={pagination.page === pagination.totalPages}
+                            className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:text-white hover:bg-blue"
+                          >
+                            <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18"><path d="M5.82197 16.1156C5.65322 16.1156 5.5126 16.0594 5.37197 15.9469C5.11885 15.6937 5.11885 15.3 5.37197 15.0469L11.2782 9L5.37197 2.98125C5.11885 2.72812 5.11885 2.33437 5.37197 2.08125C5.6251 1.82812 6.01885 1.82812 6.27197 2.08125L12.6282 8.55C12.8813 8.80312 12.8813 9.19687 12.6282 9.45L6.27197 15.9187C6.15947 16.0312 5.99072 16.1156 5.82197 16.1156Z" /></svg>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+
+
+
+
+
+              </div>
+              {/* // <!-- Content End --> */}
             </div>
-            {/* // <!-- Content End --> */}
-          </div>
-        </div></div>
+          </div></div>
       </section>
     </>
   );

@@ -1,9 +1,8 @@
-// src/components/Blog/LatestProducts.tsx
 "use client";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Product } from "@/types/product"; // Assuming you have a Product type
+import { Product } from "@/types/product";
 
 const LatestProducts = ({ products }: { products: Product[] }) => {
   return (
@@ -11,14 +10,13 @@ const LatestProducts = ({ products }: { products: Product[] }) => {
       <div className="px-4 sm:px-6 py-4.5 border-b border-gray-3">
         <h2 className="font-medium text-lg text-dark">Latest Products</h2>
       </div>
-
       <div className="p-4 sm:p-6">
         <div className="flex flex-col gap-6">
-          {/* Display a slice of the products */}
           {products.slice(0, 3).map((product) => {
-            const imageUrl = product.imgs && product.imgs.thumbnails && product.imgs.thumbnails.length > 0
-              ? product.imgs.thumbnails[0]
-              : "/images/placeholder.png";
+            const imageUrl =
+              Array.isArray(product.images) && product.images.length > 0
+                ? product.images[0]
+                : "/images/placeholder.png";
             return (
               <Link
                 key={product.id}
@@ -32,7 +30,7 @@ const LatestProducts = ({ products }: { products: Product[] }) => {
                     className="rounded-[10px] w-full"
                     width={80}
                     height={80}
-                    style={{ objectFit: 'contain' }}
+                    style={{ objectFit: "contain" }}
                   />
                 </div>
                 <div>
@@ -42,7 +40,7 @@ const LatestProducts = ({ products }: { products: Product[] }) => {
                   <span className="font-semibold text-dark">₹{product.price}</span>
                 </div>
               </Link>
-            )
+            );
           })}
         </div>
       </div>
