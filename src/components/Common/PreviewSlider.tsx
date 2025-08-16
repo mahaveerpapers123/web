@@ -1,32 +1,65 @@
 "use client";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import "swiper/css/navigation";
 import "swiper/css";
 import Image from "next/image";
-
 import { usePreviewSlider } from "@/app/context/PreviewSliderContext";
 import { useAppSelector } from "@/redux/store";
+
+const imagesToArray = (val: unknown): string[] => {
+  if (Array.isArray(val)) return val.map(String);
+  if (typeof val === "string") {
+    const t = val.trim();
+    if (!t) return [];
+    try {
+      const parsed = JSON.parse(t);
+      if (Array.isArray(parsed)) return parsed.map(String);
+    } catch {}
+    if (t.includes(",")) return t.split(",").map((s) => s.trim()).filter(Boolean);
+    return [t];
+  }
+  if (val && typeof val === "object") {
+    const v =
+      (val as any)?.previews ||
+      (val as any)?.thumbnails ||
+      (val as any)?.urls ||
+      Object.values(val as any);
+    if (Array.isArray(v)) return v.map(String);
+  }
+  return [];
+};
+
+const normalizeImages = (raw: unknown): string[] => {
+  const arr = imagesToArray(raw).filter(Boolean);
+  if (arr.length >= 2 && /^data:image\/\w+;base64$/i.test(arr[0]) && !arr[0].includes(",")) {
+    const merged = `${arr[0]},${arr[1]}`;
+    arr.splice(0, 2, merged);
+  }
+  return arr;
+};
 
 const PreviewSliderModal = () => {
   const { closePreviewModal, isModalPreviewOpen } = usePreviewSlider();
   const data = useAppSelector((state) => state.productDetailsReducer.value);
-  const sliderRef = useRef(null);
+  const sliderRef = useRef<any>(null);
 
   const handlePrev = useCallback(() => {
-    if (!sliderRef.current) return;
+    if (!sliderRef.current || !sliderRef.current.swiper) return;
     sliderRef.current.swiper.slidePrev();
   }, []);
 
   const handleNext = useCallback(() => {
-    if (!sliderRef.current) return;
+    if (!sliderRef.current || !sliderRef.current.swiper) return;
     sliderRef.current.swiper.slideNext();
   }, []);
-  
-  // Modal ఓపెన్‌లో లేనప్పుడు లేదా data లేనప్పుడు ఏమీ render చేయవద్దు
-  if (!isModalPreviewOpen || !data || !data.imgs || !data.imgs.previews) {
-    return null;
-  }
+
+  const imgs = useMemo(
+    () => normalizeImages((data as any)?.images ?? (data as any)?.imgs),
+    [data]
+  );
+
+  if (!isModalPreviewOpen || !data || imgs.length === 0) return null;
 
   return (
     <div
@@ -47,7 +80,6 @@ const PreviewSliderModal = () => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* <<< FIX: Changed to camelCase >>> */}
           <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -57,7 +89,6 @@ const PreviewSliderModal = () => {
         </svg>
       </button>
 
-      {/* Navigation Buttons Container */}
       <div className="absolute inset-0 flex justify-between items-center px-4 md:px-10">
         <button
           className="p-3 rounded-full bg-black bg-opacity-30 hover:bg-opacity-50 transition-opacity"
@@ -71,7 +102,6 @@ const PreviewSliderModal = () => {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* <<< FIX: Changed to camelCase >>> */}
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -92,7 +122,6 @@ const PreviewSliderModal = () => {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* <<< FIX: Changed to camelCase >>> */}
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -104,13 +133,12 @@ const PreviewSliderModal = () => {
       </div>
 
       <Swiper ref={sliderRef} slidesPerView={1} spaceBetween={20} className="w-full h-full">
-        {/* <<< DYNAMIC SLIDES >>> */}
-        {data.imgs.previews.map((imgSrc, index) => (
+        {imgs.map((imgSrc, index) => (
           <SwiperSlide key={index}>
             <div className="flex justify-center items-center h-full">
               <Image
                 src={imgSrc || "/images/placeholder.png"}
-                alt={`${data.name} - preview ${index + 1}`}
+                alt={`${(data as any)?.name || "Preview"} - ${index + 1}`}
                 width={600}
                 height={600}
                 style={{ objectFit: "contain", maxHeight: "80vh", maxWidth: "80vw" }}
