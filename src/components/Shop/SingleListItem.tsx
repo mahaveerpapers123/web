@@ -1,78 +1,99 @@
 "use client";
 import React from "react";
 import { Product } from "@/types/product";
-import { useModalContext } from "@/app/context/QuickViewModalContext";
-import { updateQuickView } from "@/redux/features/quickView-slice";
-import { addItemToCart } from "@/redux/features/cart-slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
+import { addItemToCart } from "@/redux/features/cart-slice";
 import Link from "next/link";
 import Image from "next/image";
 
+const getUserType = (): "B2B" | "B2C" => {
+  try {
+    const a = localStorage.getItem("authUser");
+    if (a) {
+      const p = JSON.parse(a);
+      if (p?.type === "B2B") return "B2B";
+    }
+    const b = localStorage.getItem("user");
+    if (b) {
+      const p = JSON.parse(b);
+      if (p?.type === "B2B") return "B2B";
+    }
+  } catch {}
+  return "B2C";
+};
+
+const imagesToArray = (val: unknown): string[] => {
+  if (Array.isArray(val)) return val.map(String);
+  if (typeof val === "string") {
+    const t = val.trim();
+    if (!t) return [];
+    try {
+      const parsed = JSON.parse(t);
+      if (Array.isArray(parsed)) return parsed.map(String);
+    } catch {}
+    if (t.includes(",")) return t.split(",").map((s) => s.trim()).filter(Boolean);
+    return [t];
+  }
+  if (val && typeof val === "object") {
+    const v = (val as any)?.previews || (val as any)?.thumbnails || (val as any)?.urls || Object.values(val as any);
+    if (Array.isArray(v)) return v.map(String);
+  }
+  return [];
+};
+
+const normalizeImages = (raw: unknown): string[] => {
+  const arr = imagesToArray(raw).filter(Boolean);
+  if (arr.length >= 2 && /^data:image\/\w+;base64$/i.test(arr[0]) && !arr[0].includes(",")) {
+    const merged = `${arr[0]},${arr[1]}`;
+    arr.splice(0, 2, merged);
+  }
+  return arr;
+};
+
+const currency = (n: number | string | null | undefined) => {
+  const x = typeof n === "number" ? n : Number(n || 0);
+  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(x);
+};
+
 const SingleListItem = ({ item }: { item: Product }) => {
-  const { openModal } = useModalContext();
   const dispatch = useDispatch<AppDispatch>();
+  const userType = React.useMemo(getUserType, []);
+  const images = React.useMemo(() => normalizeImages((item as any).images ?? (item as any).imgs), [item]);
+  const imageUrl = images[0] || "/images/placeholder.png";
 
-  // Determine the image URL with fallbacks
-  const imageUrl =
-    item?.imgs?.thumbnails?.[0] ||
-    item?.imgs?.previews?.[0] ||
-    "/images/placeholder.png";
+  const basePrice = typeof item.price === "number" ? item.price : Number(item.price || 0);
+  const priceToShow = userType === "B2B" ? (item.b2b_price ?? basePrice) : (item.b2c_price ?? basePrice);
+  const showStrike =
+    (userType === "B2B" && typeof item.b2b_price === "number" && item.b2b_price < basePrice) ||
+    (userType === "B2C" && typeof item.b2c_price === "number" && item.b2c_price < basePrice);
 
-  // update QuickView
-  const handleQuickViewUpdate = () => {
-    dispatch(updateQuickView({ ...item }));
-  };
-
-  // add to cart (with localStorage sync)
   const handleAddToCart = () => {
-    const newItem = {
-      ...item,
+    const cartItem = {
       id: String(item.id),
-      name: item.name ?? "",
+      name: item.name || "",
+      price: typeof priceToShow === "number" ? priceToShow : Number(priceToShow || 0),
+      image: imageUrl,
       quantity: 1,
     };
-
-    // Get existing cart from localStorage
     let existingCart: any[] = [];
     try {
       const stored = localStorage.getItem("cartItems");
       existingCart = stored ? JSON.parse(stored) : [];
-    } catch (error) {
-      console.error("Error parsing cartItems:", error);
-    }
-
-    // If item exists, increase quantity, else add new
-    const existingIndex = existingCart.findIndex((i) => i.id === newItem.id);
-    if (existingIndex !== -1) {
-      existingCart[existingIndex].quantity += 1;
-    } else {
-      existingCart.push(newItem);
-    }
-
-    // Save back to localStorage
+    } catch {}
+    const idx = existingCart.findIndex((i: any) => String(i.id) === String(cartItem.id));
+    if (idx !== -1) existingCart[idx].quantity += 1;
+    else existingCart.push(cartItem);
     localStorage.setItem("cartItems", JSON.stringify(existingCart));
-
-    // Dispatch to Redux
-    dispatch(addItemToCart(newItem));
-
-    // Fire event so UI can update
-    window.dispatchEvent(new CustomEvent("cartUpdated"));
+    dispatch(addItemToCart(cartItem as any));
+    if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("cartUpdated"));
   };
 
   return (
     <div className="group rounded-lg bg-white shadow-1">
       <div className="flex">
-        {/* Image section */}
         <div className="shadow-list relative overflow-hidden flex items-center justify-center max-w-[270px] w-full sm:min-h-[270px] p-4">
-          <Image
-            src={imageUrl}
-            alt={item.name || "Product image"}
-            width={250}
-            height={250}
-            style={{ objectFit: "contain" }}
-          />
-
+          <Image src={imageUrl} alt={item.name || "Product image"} width={250} height={250} style={{ objectFit: "contain" }} />
           <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0">
             <button
               onClick={handleAddToCart}
@@ -83,35 +104,26 @@ const SingleListItem = ({ item }: { item: Product }) => {
           </div>
         </div>
 
-        {/* Details section */}
         <div className="w-full flex flex-col gap-5 sm:flex-row sm:items-center justify-center sm:justify-between py-5 px-4 sm:px-7.5 lg:pl-11 lg:pr-12">
           <div>
             <h3 className="font-medium text-dark ease-out duration-200 hover:text-blue mb-1.5">
-              <Link href="/shop-details">{item.name}</Link>
+              <Link href={`/shop-details/${item.id}`}>{item.name}</Link>
             </h3>
-
             <span className="flex items-center gap-2 font-medium text-lg">
-              <span className="text-dark">${item.discountedPrice}</span>
-              <span className="text-dark-4 line-through">${item.price}</span>
+              <span className="text-dark">{currency(priceToShow)}</span>
+              {showStrike ? <span className="text-dark-4 line-through">{currency(basePrice)}</span> : null}
             </span>
           </div>
 
-          {/* Rating */}
           <div className="flex items-center gap-2.5 mb-2">
             <div className="flex items-center gap-1">
               {Array(5)
                 .fill(0)
                 .map((_, idx) => (
-                  <Image
-                    key={idx}
-                    src="/images/icons/icon-star.svg"
-                    alt="star icon"
-                    width={15}
-                    height={15}
-                  />
+                  <Image key={idx} src="/images/icons/icon-star.svg" alt="star icon" width={15} height={15} />
                 ))}
             </div>
-            <p className="text-custom-sm">({item.reviews})</p>
+            <p className="text-custom-sm">({(item as any).reviews ?? 0})</p>
           </div>
         </div>
       </div>
