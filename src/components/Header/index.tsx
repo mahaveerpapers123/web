@@ -132,10 +132,16 @@ const Header = () => {
       return;
     }
 
-    if (item.type === "category" && item.slugKey) {
-      router.push(`/shopping?category=${encodeURIComponent(item.slugKey)}`);
-      return;
-    }
+    if (item.type === "category") {
+  const keyFromPath =
+    item.path && !item.path.startsWith("/") ? item.path : item.path?.slice(1);
+
+  const key = keyFromPath || item.slugKey || "";
+  if (key) {
+    router.push(`/shopping?category=${encodeURIComponent(key)}`);
+    return;
+  }
+}
 
     if (item.type === "collection" && item.slugKey) {
       router.push(`/shopping?collection=${encodeURIComponent(item.slugKey)}`);

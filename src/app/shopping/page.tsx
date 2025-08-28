@@ -1,6 +1,7 @@
 import Image from "next/image";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://mahaveerbe.vercel.app";
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE ?? "https://mahaveerbe.vercel.app";
 
 type SearchParams = {
   query?: string | string[];
@@ -16,17 +17,73 @@ function toStr(v: string | string[] | undefined) {
   return Array.isArray(v) ? v[0] : v ?? "";
 }
 
-async function fetchProducts(filters: { query?: string; category?: string; collection?: string }) {
-  // Adjust this path if your backend uses a different endpoint name
-  // Expectation: GET /api/products/search?query=&category=&collection=
-  const url = new URL(`${API_BASE}/api/products/search`);
-  if (filters.query) url.searchParams.set("query", filters.query);
-  if (filters.category) url.searchParams.set("category", filters.category);
-  if (filters.collection) url.searchParams.set("collection", filters.collection);
+async function tryJson(url: string) {
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) return null;
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
 
-  const res = await fetch(url.toString(), { cache: "no-store" });
-  if (!res.ok) return [];
-  return res.json();
+function firstImage(p: any): string {
+  if (p?.thumbnail) return p.thumbnail;
+  if (p?.image) return p.image;
+  if (typeof p?.imageUrls === "string" && p.imageUrls.trim()) {
+    // CSV or single URL
+    const first = p.imageUrls.split(",").map((s: string) => s.trim())[0];
+    if (first) return first;
+  }
+  if (Array.isArray(p?.images) && p.images.length) return p.images[0];
+  return "/images/placeholder.png";
+}
+
+async function fetchProducts(filters: {
+  query?: string;
+  category?: string;
+  collection?: string;
+}) {
+  const { query, category, collection } = filters;
+
+  // 1) Preferred: unified search endpoint
+  {
+    const url = new URL(`${API_BASE}/api/products/search`);
+    if (query) url.searchParams.set("query", query);
+    if (category) url.searchParams.set("category", category);
+    if (collection) url.searchParams.set("collection", collection);
+    const data = await tryJson(url.toString());
+    if (Array.isArray(data)) return data;
+  }
+
+  // 2) Category-only endpoint like /api/products?category=slug
+  if (category) {
+    const url = new URL(`${API_BASE}/api/products`);
+    url.searchParams.set("category", category);
+    const data = await tryJson(url.toString());
+    if (Array.isArray(data)) return data;
+  }
+
+  // 3) Fallback: fetch all, filter locally
+  {
+    const all = await tryJson(`${API_BASE}/api/products`);
+    if (Array.isArray(all)) {
+      let out = all;
+      if (category) out = out.filter((p) => p?.category_slug === category);
+      if (query) {
+        const q = query.toLowerCase();
+        out = out.filter(
+          (p) =>
+            p?.name?.toLowerCase().includes(q) ||
+            p?.brand?.toLowerCase().includes(q) ||
+            p?.model_name?.toLowerCase().includes(q)
+        );
+      }
+      return out;
+    }
+  }
+
+  return [];
 }
 
 export default async function ShoppingPage({ searchParams }: Props) {
@@ -51,8 +108,10 @@ export default async function ShoppingPage({ searchParams }: Props) {
         </h1>
       </div>
 
-      {(!products || products.length === 0) ? (
-        <p className="text-gray-600">No products found.</p>
+      {!products?.length ? (
+        <p className="text-gray-600">
+          No products found{category ? ` in "${category}"` : ""}.
+        </p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {products.map((p: any) => (
@@ -60,15 +119,17 @@ export default async function ShoppingPage({ searchParams }: Props) {
               <div className="rounded-lg border p-3 hover:shadow-md transition">
                 <div className="relative w-full h-40">
                   <Image
-                    src={p.thumbnail || p.image || "/images/placeholder.png"}
-                    alt={p.name}
+                    src={firstImage(p)}
+                    alt={p.name || "Product image"}
                     fill
                     sizes="(min-width: 768px) 25vw, 50vw"
                     className="object-cover rounded"
                   />
                 </div>
                 <div className="mt-2 text-sm font-medium">{p.name}</div>
-                <div className="text-xs text-gray-600">₹{Number(p.price).toFixed(2)}</div>
+                <div className="text-xs text-gray-600">
+                  ₹{Number(p.price).toFixed(2)}
+                </div>
               </div>
             </a>
           ))}
