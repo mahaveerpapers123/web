@@ -24,15 +24,18 @@ const Dropdown = ({ menuItem, stickyMenu }) => {
       >
         {menuItem.title}
         {menuItem.submenu && (
-            <svg
+          <svg
             className={`fill-current ease-in-out duration-200 ${
-                dropdownOpen && "rotate-180"
+              dropdownOpen && "rotate-180"
             }`}
-            width="12" height="12" viewBox="0 0 12 12" fill="none"
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            >
+          >
             <path d="M6.0001 7.8248L10.2426 3.5823L11.1854 4.5251L6.0001 9.7104L0.814786 4.5251L1.75759 3.5823L6.0001 7.8248Z" />
-            </svg>
+          </svg>
         )}
       </a>
 
