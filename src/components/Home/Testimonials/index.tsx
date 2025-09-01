@@ -187,11 +187,11 @@ const Testimonials = ({ productId }: Props) => {
           {stickyVisible && (
             <div className="mx-auto max-w-[1170px] px-4 sm:px-8 xl:px-0">
               <div className="mt-2 flex items-center justify-between rounded-xl bg-dark text-white px-4 py-2 shadow-lg">
-                <p className="text-sm">Have thoughts about this product?</p>
+                <p className="text-xs sm:text-sm">Have thoughts about this product?</p>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleOpenReview}
-                    className="px-3 py-1.5 rounded-lg bg-white text-dark text-sm font-medium hover:opacity-90"
+                    className="px-3 py-1.5 rounded-lg bg-white text-dark text-xs sm:text-sm font-medium hover:opacity-90"
                   >
                     Write a review
                   </button>
@@ -218,7 +218,7 @@ const Testimonials = ({ productId }: Props) => {
               >
                 ✕
               </button>
-              <h3 className="text-lg font-semibold text-dark mb-1 pr-8">Share your review</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-dark mb-1 pr-8">Share your review</h3>
               {!validProductId && (
                 <p className="mb-3 text-xs text-red-500">
                   This page isn’t tied to a product. Open a product page to submit a review.
@@ -251,13 +251,13 @@ const Testimonials = ({ productId }: Props) => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Title (optional)"
-                className="w-full rounded-xl border border-gray-200 p-3 outline-none focus:ring-2 focus:ring-dark/10 mb-3"
+                className="w-full rounded-xl border border-gray-200 p-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-dark/10 mb-3"
               />
               <textarea
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 placeholder="Write your feedback..."
-                className="w-full h-28 rounded-xl border border-gray-200 p-3 outline-none focus:ring-2 focus:ring-dark/10"
+                className="w-full h-28 rounded-xl border border-gray-200 p-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-dark/10"
               />
               <input
                 type="text"
@@ -271,26 +271,26 @@ const Testimonials = ({ productId }: Props) => {
                   )
                 }
                 placeholder="Image URLs, comma separated (optional)"
-                className="w-full rounded-xl border border-gray-200 p-3 outline-none focus:ring-2 focus:ring-dark/10 mt-3"
+                className="w-full rounded-xl border border-gray-200 p-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-dark/10 mt-3"
               />
               <div className="grid grid-cols-2 gap-2 mt-3">
                 <input
                   value={name || ""}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
-                  className="w-full rounded-xl border border-gray-200 p-3 outline-none focus:ring-2 focus:ring-dark/10"
+                  className="w-full rounded-xl border border-gray-200 p-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-dark/10"
                 />
                 <input
                   value={email || ""}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Your email"
-                  className="w-full rounded-xl border border-gray-200 p-3 outline-none focus:ring-2 focus:ring-dark/10"
+                  className="w-full rounded-xl border border-gray-200 p-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-dark/10"
                 />
               </div>
               <div className="mt-4 flex items-center justify-end gap-2">
                 <button
                   onClick={handleClose}
-                  className="px-4 py-2 rounded-xl border border-gray-300 text-dark text-sm font-medium hover:bg-gray-50"
+                  className="px-4 py-2 rounded-xl border border-gray-300 text-dark text-xs sm:text-sm font-medium hover:bg-gray-50"
                   disabled={submitting}
                 >
                   Cancel
@@ -298,7 +298,7 @@ const Testimonials = ({ productId }: Props) => {
                 <button
                   onClick={handleSubmit}
                   disabled={rating === 0 || feedback.trim() === "" || submitting || !validProductId}
-                  className="px-4 py-2 rounded-xl bg-dark text-white text-sm font-medium disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-dark text-white text-xs sm:text-sm font-medium disabled:opacity-50"
                 >
                   {submitting ? "Submitting..." : "Submit"}
                 </button>
@@ -308,22 +308,22 @@ const Testimonials = ({ productId }: Props) => {
         )}
       </Portal>
 
-      <section className="overflow-hidden pb-16.5">
+      <section className="overflow-hidden pb-16.5 mt-12 sm:mt-16">
         <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
           <div className="">
             <div className="swiper testimonial-carousel common-carousel p-5">
-              <div className="mb-10 flex items-center justify-between">
+              <div className="mb-6 sm:mb-10 flex items-center justify-between">
                 <div>
-                  <span className="flex items-center gap-2.5 font-medium text-dark mb-1.5">
+                  <span className="flex items-center gap-2.5 font-medium text-dark mb-1.5 text-xs sm:text-sm">
                     <Image src="/images/icons/icon-08.svg" alt="icon" width={17} height={17} />
                     Best Reviews
                   </span>
-                  <h2 className="font-semibold text-xl xl:text-heading-5 text-dark">User Feedbacks</h2>
+                  <h2 className="font-semibold text-lg sm:text-xl xl:text-heading-5 text-dark">User Feedbacks</h2>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleOpenReview}
-                    className="px-4 py-2 rounded-xl bg-dark text-white text-sm font-medium hover:opacity-90"
+                    className="px-4 py-2 rounded-xl bg-dark text-white text-xs sm:text-sm font-medium hover:opacity-90"
                   >
                     Write a review
                   </button>
