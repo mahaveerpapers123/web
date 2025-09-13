@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Product } from "@/types/product";
 import { useModalContext } from "@/app/context/QuickViewModalContext";
 import { updateQuickView } from "@/redux/features/quickView-slice";
-//import { addItemToWishlist } from "@/redux/features/wishlist-slice";
 import { updateproductDetails } from "@/redux/features/product-details";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
@@ -41,17 +40,6 @@ const ProductItem = ({ item }: { item: Product }) => {
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
- {/*} const handleItemToWishList = () => {
-    dispatch(
-      addItemToWishlist({
-        ...item,
-        title: item.name ?? "",
-        status: "available",
-        quantity: 1,
-      })
-    );
-  }; */}
-
   const handleProductDetails = () => {
     dispatch(updateproductDetails({ ...item }));
   };
@@ -75,7 +63,7 @@ const ProductItem = ({ item }: { item: Product }) => {
           alt={item.name ?? "product"}
           width={250}
           height={250}
-          style={{ objectFit: "contain" }}
+          className="h-[250px] w-auto object-contain"
           unoptimized={imageUrl?.startsWith("data:image/")}
         />
         <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0">

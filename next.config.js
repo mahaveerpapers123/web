@@ -9,7 +9,8 @@ const nextConfig = {
       { protocol: "http", hostname: "mahaveerbe.vercel.app", pathname: "/**" },
       { protocol: "https", hostname: "mahaveerbe.vercel.app", pathname: "/uploads/**" },
       { protocol: "https", hostname: "mahaveerbe.vercel.app", pathname: "/**" },
-      { protocol: "https", hostname: "encrypted-tbn1.gstatic.com", pathname: "/**" }
+      { protocol: "https", hostname: "encrypted-tbn1.gstatic.com", pathname: "/**" },
+      { protocol: "https", hostname: "mahaveerpapers.blr1.digitaloceanspaces.com", pathname: "/**" }
     ]
   }
 };

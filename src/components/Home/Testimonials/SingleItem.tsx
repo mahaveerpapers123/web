@@ -30,7 +30,7 @@ const SingleItem = ({ testimonial }: { testimonial: Testimonial }) => {
       {Array.isArray(testimonial.images) && testimonial.images.length > 0 ? (
         <div className="grid grid-cols-3 gap-2 mb-4">
           {testimonial.images.slice(0, 6).map((src, idx) => (
-            <div key={idx} className="relative w-full pt-[100%] rounded-md overflow-hidden">
+            <div key={idx} className="relative w-full h-[100px] rounded-md overflow-hidden">
               <Image src={src} alt={`review-image-${idx + 1}`} fill className="object-cover" />
             </div>
           ))}
@@ -41,9 +41,9 @@ const SingleItem = ({ testimonial }: { testimonial: Testimonial }) => {
           <Image
             src={testimonial.authorImg || "/images/user-placeholder.png"}
             alt="author"
-            className="w-12.5 h-12.5 rounded-full overflow-hidden"
             width={50}
             height={50}
+            className="h-[50px] w-[50px] rounded-full object-cover"
           />
         </div>
         <div>

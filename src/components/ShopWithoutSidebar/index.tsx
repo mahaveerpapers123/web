@@ -190,11 +190,19 @@ export default function ShopWithoutSidebar() {
                 >
                   {pageItems.map((item) =>
                     view === "grid" ? (
-                      <div key={item.id} className="h-full">
+                      <div
+                        key={item.id}
+                        className="h-full [&_img:not([src*='icon-star'])]:h-[250px] [&_img:not([src*='icon-star'])]:w-auto [&_img:not([src*='icon-star'])]:object-contain"
+                      >
                         <SingleGridItem item={item} />
                       </div>
                     ) : (
-                      <SingleListItem item={item} key={item.id} />
+                      <div
+                        key={item.id}
+                        className="[&_img:not([src*='icon-star'])]:h-[250px] [&_img:not([src*='icon-star'])]:w-auto [&_img:not([src*='icon-star'])]:object-contain"
+                      >
+                        <SingleListItem item={item} />
+                      </div>
                     )
                   )}
                 </div>
