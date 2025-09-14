@@ -171,10 +171,10 @@ interface ApiResponse {
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
   (process.env.NODE_ENV === "production"
-    ? "https://mahaveerbe.vercel.app"
+    ? "https://mahaveerpapersbe.vercel.app"
     : "http://localhost:5000");
 
-const PROD_FILES_HOST = "https://mahaveerbe.vercel.app";
+const PROD_FILES_HOST = "https://mahaveerpapersbe.vercel.app";
 
 const imagesToArray = (val: unknown): string[] => {
   if (Array.isArray(val)) return val.map(String);
@@ -211,7 +211,7 @@ const normalizeImages = (raw: unknown): string[] => {
       return `${PROD_FILES_HOST}${withoutHost}`;
     }
 
-    if (url.startsWith("http://mahaveerbe.vercel.app")) {
+    if (url.startsWith("http://mahaveerpapersbe.vercel.app")) {
       return url.replace("http://", "https://");
     }
 

@@ -13,7 +13,7 @@ const normalizeImages = (val: any): string[] => {
   if (arr.length >= 2 && /^data:image\/\w+;base64$/i.test(arr[0]) && !arr[0].includes(",")) {
     arr.splice(0, 2, `${arr[0]},${arr[1]}`);
   }
-  const PROD_FILES_HOST = "https://mahaveerbe.vercel.app";
+  const PROD_FILES_HOST = "https://mahaveerpapersbe.vercel.app";
   const localhostRe = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i;
 
   return arr
@@ -21,7 +21,7 @@ const normalizeImages = (val: any): string[] => {
     .map(u => {
       if (u.startsWith("data:image/")) return u;
       if (localhostRe.test(u)) return `${PROD_FILES_HOST}${u.replace(localhostRe, "")}`;
-      if (u.startsWith("http://mahaveerbe.vercel.app")) return u.replace("http://", "https://");
+      if (u.startsWith("http://mahaveerpapersbe.vercel.app")) return u.replace("http://", "https://");
       return u;
     });
 };

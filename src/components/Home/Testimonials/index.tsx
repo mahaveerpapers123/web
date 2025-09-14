@@ -23,7 +23,7 @@ type StoredUser = {
 
 const API_BASE =
   (typeof window !== "undefined" && (process.env.NEXT_PUBLIC_API_BASE_URL || "")) ||
-  "https://mahaveerbe.vercel.app";
+  "https://mahaveerpapersbe.vercel.app";
 
 const uuidRE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

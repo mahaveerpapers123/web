@@ -14,10 +14,10 @@ import { Product } from "@/types/product";
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
   (process.env.NODE_ENV === "production"
-    ? "https://mahaveerbe.vercel.app"
+    ? "https://mahaveerpapersbe.vercel.app"
     : "http://localhost:5000");
 
-const PROD_FILES_HOST = "https://mahaveerbe.vercel.app";
+const PROD_FILES_HOST = "https://mahaveerpapersbe.vercel.app";
 
 const ShopWithSidebar = () => {
   const router = useRouter();

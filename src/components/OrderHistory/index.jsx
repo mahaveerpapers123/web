@@ -12,7 +12,7 @@ const OrderHistory = () => {
   const API_BASE =
     process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
     (process.env.NODE_ENV === "production"
-      ? "https://mahaveerbe.vercel.app"
+      ? "https://mahaveerpapersbe.vercel.app"
       : "http://localhost:5000");
 
   /*useEffect(() => {

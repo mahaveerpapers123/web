@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://mahaveerbe.vercel.app";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://mahaveerpapersbe.vercel.app";
 
 type Props = {
   params: Promise<{ slug: string }>;

@@ -7,7 +7,7 @@ import SingleGridItem from "@/components/Shop/SingleGridItem";
 import SingleListItem from "@/components/Shop/SingleListItem";
 import { Product } from "@/types/product";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://mahaveerbe.vercel.app";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://mahaveerpapersbe.vercel.app";
 
 type ApiProduct = any;
 

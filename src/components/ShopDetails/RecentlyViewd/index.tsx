@@ -8,7 +8,7 @@ import { Category } from "@/types/category";
 
 type CatIn = { label: string; value: string };
 
-const API = "https://mahaveerbe.vercel.app";
+const API = "https://mahaveerpapersbe.vercel.app";
 
 const fetchCategoryImage = async (slug: string) => {
   const url = `${API}/api/products?category=${encodeURIComponent(slug)}&limit=1`;

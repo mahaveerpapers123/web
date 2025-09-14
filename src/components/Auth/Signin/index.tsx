@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const BASE_URL = "https://mahaveerbe.vercel.app";
+const BASE_URL = "https://mahaveerpapersbe.vercel.app";
 const API_ROUTES = {
   request: `${BASE_URL}/api/auth/forgot/request`,
   verify: `${BASE_URL}/api/auth/forgot/verify`,
