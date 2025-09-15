@@ -1,4 +1,3 @@
-// src/components/ShopWithoutSidebar/index.tsx
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -19,11 +18,7 @@ const normalizeItem = (p: ApiProduct): Product & { imgs?: { previews?: string[];
   const https = merged.map((u: string) =>
     typeof u === "string" && u.startsWith("http://") ? u.replace("http://", "https://") : u
   );
-  return {
-    ...p,
-    images: https,
-    imgs: { thumbnails: https, previews: https },
-  };
+  return { ...p, images: https, imgs: { thumbnails: https, previews: https } };
 };
 
 function coerceArray(json: any): ApiProduct[] {
@@ -35,11 +30,31 @@ function coerceArray(json: any): ApiProduct[] {
   return [];
 }
 
+function tokenize(s: string) {
+  return s.toLowerCase().trim().split(/\s+/).filter(Boolean);
+}
+
+function matchesQuery(p: Product, q: string) {
+  if (!q) return true;
+  const hay = [
+    p.name,
+    (p as any).model_name,
+    p.brand,
+    (p as any).category_slug,
+    p.description,
+  ]
+    .map((x) => String(x ?? "").toLowerCase())
+    .join(" ");
+  const tokens = tokenize(q);
+  return tokens.every((t) => hay.includes(t) || hay.replace(/[^a-z0-9]+/g, " ").includes(t));
+}
+
 export default function ShopWithoutSidebar() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const category = searchParams.get("category") || "";
+  const query = searchParams.get("query") || "";
   const pageParam = Number(searchParams.get("page")) || 1;
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -78,20 +93,26 @@ export default function ShopWithoutSidebar() {
     };
   }, [category]);
 
-  const total = allProducts.length;
+  const filtered = useMemo(() => {
+    if (!query) return allProducts;
+    return allProducts.filter((p) => matchesQuery(p, query));
+  }, [allProducts, query]);
+
+  const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const page = Math.min(Math.max(1, pageParam), totalPages);
 
   const pageItems = useMemo(() => {
     const start = (page - 1) * pageSize;
-    return allProducts.slice(start, start + pageSize);
-  }, [allProducts, page]);
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page]);
 
   const handlePageChange = (p: number) => {
     if (p < 1 || p > totalPages) return;
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(p));
     if (category) params.set("category", category);
+    if (query) params.set("query", query);
     router.push(`/shopping?${params.toString()}`);
   };
 
@@ -113,7 +134,12 @@ export default function ShopWithoutSidebar() {
     return out;
   }, [page, totalPages]);
 
-  const title = category ? category.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()) : "Explore All Products";
+  const title =
+    query
+      ? `Results for "${query}"`
+      : category
+      ? category.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase())
+      : "Explore All Products";
 
   if (loading) {
     return (
@@ -253,18 +279,4 @@ export default function ShopWithoutSidebar() {
                           className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:text-white hover:bg-blue"
                         >
                           <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none">
-                            <path d="M5.82197 16.1156C5.65322 16.1156 5.5126 16.0594 5.37197 15.9469C5.11885 15.6937 5.11885 15.3 5.37197 15.0469L11.2782 9L5.37197 2.98125C5.11885 2.72812 5.11885 2.33437 5.37197 2.08125C5.6251 1.82812 6.01885 1.82812 6.27197 2.08125L12.6282 8.55C12.8813 8.80312 12.8813 9.19687 12.6282 9.45L6.27197 15.9187C6.15947 16.0312 5.99072 16.1156 5.82197 16.1156Z" />
-                          </svg>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
+                            <path d="M5.82197 16.1156C5.65322 16.1156 5.5126 16.0594 5.37197 15.9469C5.11885 15.6937 5.11885 15.3 5.37197 15.0469L11.2782 9L5.37197 2.98125C5.11885 2.72812 5.11885 2.33437 5.37197 2.08125C5.6251 1.82812 6.01885 1.82812 6.27197 2.08125L12.6282 8.55C12.8813 8.80312 12.8813 9.19687 12.6282 9.45L6.27197 15.9187C6.15947 16.031
