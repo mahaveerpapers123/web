@@ -252,7 +252,7 @@ const Billing = ({ onChange }: { onChange?: (addr: BillingAddr) => void }) => {
           />
         </div>
 
-        <div>
+        {/*<div>
           <label
             htmlFor="checkboxLabelTwo"
             className="text-dark flex cursor-pointer select-none items-center"
@@ -288,7 +288,7 @@ const Billing = ({ onChange }: { onChange?: (addr: BillingAddr) => void }) => {
             </div>
             Create an Account
           </label>
-        </div>
+        </div> */}
       </div>
     </div>
   );
