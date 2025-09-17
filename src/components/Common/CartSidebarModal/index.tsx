@@ -134,14 +134,12 @@
 
 // export default CartSidebarModal;
 
-
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
 import { useCartModalContext } from "@/app/context/CartSidebarModalContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-// Type definition for a cart item
 interface CartItem {
   id: string;
   name: string;
@@ -150,14 +148,12 @@ interface CartItem {
   images?: string[];
 }
 
-// --- CHILD COMPONENT 1: Premium Single Item View ---
 const SingleItem = ({ item, onRemove, onUpdateQuantity }: {
   item: CartItem,
   onRemove: (id: string) => void,
   onUpdateQuantity: (id: string, newQuantity: number) => void
 }) => {
   const imageUrl = item.images && item.images.length > 0 ? item.images[0] : "/images/placeholder.png";
-
   return (
     <div className="flex items-center gap-4 transition-opacity duration-300">
       <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
@@ -168,22 +164,18 @@ const SingleItem = ({ item, onRemove, onUpdateQuantity }: {
           <h4 className="font-semibold text-dark text-base leading-tight hover:text-blue">
             <Link href="/shop-details">{item.name}</Link>
           </h4>
-          <p className="text-gray-500 text-sm mt-1">
-            ₹{Number(item.price).toFixed(2)}
-          </p>
+          <p className="text-gray-500 text-sm mt-1">₹{Number(item.price).toFixed(2)}</p>
         </div>
         <div className="flex items-center justify-between mt-2">
-            <div className="flex items-center border border-gray-200 rounded-full">
-              <button onClick={() => onUpdateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-gray-500 hover:text-dark transition-colors">-</button>
-              <span className="px-3 py-1 text-sm font-semibold text-dark">{item.quantity}</span>
-              <button onClick={() => onUpdateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-gray-500 hover:text-dark transition-colors">+</button>
-            </div>
-            <p className="font-bold text-dark text-base">
-                ₹{(Number(item.price) * item.quantity).toFixed(2)}
-            </p>
+          <div className="flex items-center border border-gray-200 rounded-full">
+            <button onClick={() => onUpdateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-gray-500 hover:text-dark transition-colors">-</button>
+            <span className="px-3 py-1 text-sm font-semibold text-dark">{item.quantity}</span>
+            <button onClick={() => onUpdateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-gray-500 hover:text-dark transition-colors">+</button>
+          </div>
+          <p className="font-bold text-dark text-base">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
         </div>
       </div>
-       <button
+      <button
         onClick={() => onRemove(item.id)}
         aria-label="Remove item"
         className="text-gray-300 hover:text-red-500 transition-all duration-300 self-start mt-2"
@@ -196,7 +188,6 @@ const SingleItem = ({ item, onRemove, onUpdateQuantity }: {
   );
 };
 
-// --- CHILD COMPONENT 2: Premium Empty Cart View ---
 const EmptyCart = ({ onContinueShopping }: { onContinueShopping: () => void }) => (
   <div className="flex flex-col items-center justify-center text-center h-full px-4">
     <svg className="w-28 h-28 text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -213,7 +204,6 @@ const EmptyCart = ({ onContinueShopping }: { onContinueShopping: () => void }) =
   </div>
 );
 
-// --- MAIN SIDEBAR COMPONENT ---
 const CartSidebarModal = () => {
   const { isCartModalOpen, closeCartModal } = useCartModalContext();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -235,13 +225,10 @@ const CartSidebarModal = () => {
         }
       }
     };
-    
     if (isCartModalOpen) {
-        loadCart();
+      loadCart();
     }
-    
     window.addEventListener('cartUpdated', loadCart);
-
     return () => {
       window.removeEventListener('cartUpdated', loadCart);
     };
@@ -253,14 +240,12 @@ const CartSidebarModal = () => {
         closeCartModal();
       }
     }
-
     if (isCartModalOpen) {
       document.body.style.overflow = 'hidden';
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.body.style.overflow = 'auto';
     }
-
     return () => {
       document.body.style.overflow = 'auto';
       document.removeEventListener("mousedown", handleClickOutside);
@@ -288,17 +273,15 @@ const CartSidebarModal = () => {
     const updatedCart = cartItems.filter((item) => item.id !== itemId);
     updateCart(updatedCart);
   };
-  
+
   const handleCheckout = () => {
     localStorage.removeItem("checkoutOrder");
-    const orderData = {
-      items: cartItems,
-      total: total,
-    };
+    const orderData = { items: cartItems, total: total };
     localStorage.setItem('checkoutOrder', JSON.stringify(orderData));
+    closeCartModal();
     router.push('/checkout');
   };
-  
+
   const handleViewCart = () => {
     closeCartModal();
     router.push('/cart');
@@ -306,19 +289,11 @@ const CartSidebarModal = () => {
 
   return (
     <div
-      className={`fixed inset-0 z-99999 flex justify-end bg-dark/60 backdrop-blur-sm transition-opacity duration-500 ease-in-out ${
-        isCartModalOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-99999 flex justify-end bg-dark/60 backdrop-blur-sm transition-opacity duration-500 ease-in-out ${isCartModalOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
     >
       <div
-        className={`w-full max-w-lg h-full bg-white shadow-2xl flex flex-col modal-content transition-transform duration-500 ease-in-out ${
-          isCartModalOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-        style={{
-        background:
-          "linear-gradient(to right, #ccfbf1, #dcfce7, #fef9c3, #fecaca)",overflowX: "hidden",
-          
-        }}
+        className={`w-full max-w-lg h-full bg-white shadow-2xl flex flex-col modal-content transition-transform duration-500 ease-in-out ${isCartModalOpen ? "translate-x-0" : "translate-x-full"}`}
+        style={{ background: "linear-gradient(to right, #ccfbf1, #dcfce7, #fef9c3, #fecaca)", overflowX: "hidden" }}
       >
         <div className="flex items-center justify-between p-5 border-b border-dark">
           <h2 className="font-bold text-dark text-2xl tracking-tight">Your Cart</h2>
@@ -347,17 +322,15 @@ const CartSidebarModal = () => {
         </div>
 
         {cartItems.length > 0 && (
-          <div className="p-6 border-t border-dark bg-white"
-          style={{
-        background:
-          "linear-gradient(to right, #ccfbf1, #dcfce7, #fef9c3, #fecaca)",overflowX: "hidden",
-          
-        }}>
+          <div
+            className="p-6 border-t border-dark bg-white"
+            style={{ background: "linear-gradient(to right, #ccfbf1, #dcfce7, #fef9c3, #fecaca)", overflowX: "hidden" }}
+          >
             <div className="space-y-3 mb-5">
-                <div className="flex justify-between text-dark"><p>Subtotal</p><p>₹{subtotal.toFixed(2)}</p></div>
-                <div className="flex justify-between text-dark"><p>Shipping</p><p>{shipping === 0 ? "Free" : `₹${shipping.toFixed(2)}`}</p></div>
-                <div className="border-t border-dark my-2"></div>
-                <div className="flex justify-between text-dark text-lg font-bold"><p>Total</p><p>₹{total.toFixed(2)}</p></div>
+              <div className="flex justify-between text-dark"><p>Subtotal</p><p>₹{subtotal.toFixed(2)}</p></div>
+              <div className="flex justify-between text-dark"><p>Shipping</p><p>{shipping === 0 ? "Free" : `₹${shipping.toFixed(2)}`}</p></div>
+              <div className="border-t border-dark my-2"></div>
+              <div className="flex justify-between text-dark text-lg font-bold"><p>Total</p><p>₹{total.toFixed(2)}</p></div>
             </div>
             <div className="flex flex-col gap-3">
               <button
