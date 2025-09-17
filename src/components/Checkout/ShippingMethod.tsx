@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+/*import React, { useState } from "react";
 import Image from "next/image";
 
 const ShippingMethod = () => {
@@ -23,8 +23,8 @@ const ShippingMethod = () => {
                 className="sr-only"
                 onChange={() => setShippingMethod("free")}
               />
-              {/* selectShipping === 'free' ? 'border-4 border-blue' : 'border border-gray-4' */}
-              <div
+              {/* selectShipping === 'free' ? 'border-4 border-blue' : 'border border-gray-4' */} */
+              {/*<div
                 className={`flex h-4 w-4 items-center justify-center rounded-full ${
                   shippingMethod === "free"
                     ? "border-4 border-blue"
@@ -120,4 +120,4 @@ const ShippingMethod = () => {
   );
 };
 
-export default ShippingMethod;
+export default ShippingMethod; */}
