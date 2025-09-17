@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from "react";
 import Breadcrumb from "../Common/Breadcrumb";
 import Shipping from "./Shipping";
-import ShippingMethod from "./ShippingMethod";
-import PaymentMethod from "./PaymentMethod";
 import Coupon from "./Coupon";
 import Billing from "./Billing";
 
@@ -105,13 +103,6 @@ const Checkout = () => {
         total: order.total
       };
 
-      /*const res = await fetch("http://localhost:5000/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }); */
-
-
       const res = await fetch(`${API_BASE}/api/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -122,7 +113,7 @@ const Checkout = () => {
       let data: any = null;
       try {
         data = raw ? JSON.parse(raw) : null;
-      } catch { }
+      } catch {}
 
       if (res.status >= 200 && res.status < 300) {
         setMessage("Order placed successfully!");
@@ -208,8 +199,8 @@ const Checkout = () => {
                 </div>
 
                 <Coupon />
-                <ShippingMethod />
-                <PaymentMethod />
+                {/* <ShippingMethod /> */}
+                {/* <PaymentMethod /> */}
 
                 <button
                   type="submit"
