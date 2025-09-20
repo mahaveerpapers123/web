@@ -1,6 +1,6 @@
 "use client";
-import React, { useCallback, useRef, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useCallback, useRef, useEffect, useState } from "react";
 import "swiper/css/navigation";
 import "swiper/css";
 import { Category } from "@/types/category";
@@ -49,7 +49,7 @@ const Categories = () => {
         : Array.isArray(raw?.categories)
         ? raw.categories
         : [];
-      const base = list.filter((c) => !!c?.label && !!c?.value && c.value !== "all").slice(0, 16);
+      const base = list.filter((c) => !!c?.label && !!c?.value && c.value !== "all").slice(0, 24);
       const imgs = await Promise.all(
         base.map(async (c) => {
           const fromApi = normalizeUrl(c.image);
@@ -67,6 +67,12 @@ const Categories = () => {
       setItems(normalized);
     };
     load();
+  }, []);
+
+  useEffect(() => {
+    if (sliderRef.current) {
+      sliderRef.current.swiper.init();
+    }
   }, []);
 
   return (
@@ -99,14 +105,13 @@ const Categories = () => {
           </div>
           <Swiper
             ref={sliderRef}
-            slidesPerView={4}
+            slidesPerView={6}
             spaceBetween={20}
             breakpoints={{
               0: { slidesPerView: 2, spaceBetween: 12 },
-              768: { slidesPerView: 3, spaceBetween: 16 },
-              1200: { slidesPerView: 4, spaceBetween: 20 }
+              1000: { slidesPerView: 4, spaceBetween: 16 },
+              1200: { slidesPerView: 6, spaceBetween: 20 }
             }}
-            className="justify-between"
           >
             {items.map((item, key) => (
               <SwiperSlide key={key}>
@@ -114,9 +119,7 @@ const Categories = () => {
                   <div className="w-28 h-28 md:w-32 md:h-32 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
                     <img src={item.img} alt={item.title} className="w-full h-full object-cover rounded-full" />
                   </div>
-                  <div className="text-center text-sm font-medium line-clamp-2 max-w-[8rem] md:max-w-[9rem]">
-                    {item.title}
-                  </div>
+                  <div className="text-center text-sm font-medium line-clamp-2 max-w-[8rem] md:max-w-[9rem]">{item.title}</div>
                 </div>
               </SwiperSlide>
             ))}

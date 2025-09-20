@@ -114,9 +114,7 @@ const RecentlyViewdItems = () => {
                   <div className="w-28 h-28 md:w-32 md:h-32 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
                     <img src={item.img} alt={item.title} className="w-full h-full object-cover rounded-full" />
                   </div>
-                  <div className="text-center text-sm font-medium line-clamp-2 max-w-[8rem] md:max-w-[9rem]">
-                    {item.title}
-                  </div>
+                  <div className="text-center text-sm font-medium line-clamp-2 max-w-[8rem] md:max-w-[9rem]">{item.title}</div>
                 </div>
               </SwiperSlide>
             ))}
