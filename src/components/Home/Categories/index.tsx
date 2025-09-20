@@ -1,25 +1,31 @@
 "use client";
+import React, { useCallback, useRef, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useCallback, useRef, useEffect, useState } from "react";
 import "swiper/css/navigation";
 import "swiper/css";
-import SingleItem from "./SingleItem";
+import SingleItem from "@/components/Home/Categories/SingleItem";
 import { Category } from "@/types/category";
 
-type CatIn = { label: string; value: string };
+type CatIn = { label: string; value: string; image?: string | null };
 
 const API = "https://mahaveerpapersbe.vercel.app";
 
+const normalizeUrl = (u: any) =>
+  typeof u === "string" && u.startsWith("http://") ? u.replace("http://", "https://") : u || "";
+
 const fetchCategoryImage = async (slug: string) => {
-  const url = `${API}/api/products?category=${encodeURIComponent(slug)}&limit=1`;
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) return "";
-  const json = await res.json().catch(() => null);
-  const img = json?.items?.[0]?.images?.[0];
-  return typeof img === "string" ? img : "";
+  const trySlugs = [slug, slug.split("/").pop() || slug];
+  for (const s of trySlugs) {
+    const res = await fetch(`${API}/api/products?category=${encodeURIComponent(s)}&limit=1`, { cache: "no-store" });
+    if (!res.ok) continue;
+    const json = await res.json().catch(() => null);
+    const img = json?.items?.[0]?.images?.[0];
+    if (img) return normalizeUrl(img);
+  }
+  return "";
 };
 
-const Categories = () => {
+const RecentlyViewdItems = () => {
   const sliderRef = useRef<any>(null);
   const [items, setItems] = useState<Category[]>([]);
 
@@ -44,26 +50,24 @@ const Categories = () => {
         : Array.isArray(raw?.categories)
         ? raw.categories
         : [];
-      const base = list
-        .filter((c) => !!c?.label && !!c?.value && c.value !== "all")
-        .slice(0, 24);
-      const imgs = await Promise.all(base.map((c) => fetchCategoryImage(c.value).catch(() => "")));
+      const base = list.filter((c) => !!c?.label && !!c?.value && c.value !== "all").slice(0, 16);
+      const imgs = await Promise.all(
+        base.map(async (c) => {
+          const fromApi = normalizeUrl(c.image);
+          if (fromApi) return fromApi;
+          return await fetchCategoryImage(c.value).catch(() => "");
+        })
+      );
       const normalized: Category[] = base.map((c, i) => {
         const title = String(c.label || "");
         const slug = String(c.value || "").toLowerCase();
-        const href = `/category/${slug}`;
+        const href = `/shopping?category=${encodeURIComponent(slug)}`;
         const img = imgs[i] || "/images/placeholder.png";
         return { title, icon: img, img, href, slug } as any;
       });
       setItems(normalized);
     };
     load();
-  }, []);
-
-  useEffect(() => {
-    if (sliderRef.current) {
-      sliderRef.current.swiper.init();
-    }
   }, []);
 
   return (
@@ -96,13 +100,14 @@ const Categories = () => {
           </div>
           <Swiper
             ref={sliderRef}
-            slidesPerView={6}
+            slidesPerView={4}
             spaceBetween={20}
             breakpoints={{
               0: { slidesPerView: 2, spaceBetween: 12 },
-              1000: { slidesPerView: 4, spaceBetween: 16 },
-              1200: { slidesPerView: 6, spaceBetween: 20 }
+              768: { slidesPerView: 3, spaceBetween: 16 },
+              1200: { slidesPerView: 4, spaceBetween: 20 }
             }}
+            className="justify-between"
           >
             {items.map((item, key) => (
               <SwiperSlide key={key}>
@@ -116,4 +121,4 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+export default RecentlyViewdItems;
