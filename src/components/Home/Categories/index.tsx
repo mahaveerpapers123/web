@@ -3,7 +3,6 @@ import React, { useCallback, useRef, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css/navigation";
 import "swiper/css";
-import SingleItem from "@/components/Home/Categories/SingleItem";
 import { Category } from "@/types/category";
 
 type CatIn = { label: string; value: string; image?: string | null };
@@ -25,7 +24,7 @@ const fetchCategoryImage = async (slug: string) => {
   return "";
 };
 
-const RecentlyViewdItems = () => {
+const Categories = () => {
   const sliderRef = useRef<any>(null);
   const [items, setItems] = useState<Category[]>([]);
 
@@ -98,6 +97,7 @@ const RecentlyViewdItems = () => {
               </button>
             </div>
           </div>
+
           <Swiper
             ref={sliderRef}
             slidesPerView={4}
@@ -111,7 +111,14 @@ const RecentlyViewdItems = () => {
           >
             {items.map((item, key) => (
               <SwiperSlide key={key}>
-                <SingleItem item={item} />
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-28 h-28 md:w-32 md:h-32 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
+                    <img src={item.img} alt={item.title} className="w-full h-full object-cover rounded-full" />
+                  </div>
+                  <div className="text-center text-sm font-medium line-clamp-2 max-w-[8rem] md:max-w-[9rem]">
+                    {item.title}
+                  </div>
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>
@@ -121,4 +128,4 @@ const RecentlyViewdItems = () => {
   );
 };
 
-export default RecentlyViewdItems;
+export default Categories;
