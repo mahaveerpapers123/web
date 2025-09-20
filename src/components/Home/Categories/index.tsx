@@ -60,11 +60,10 @@ const Categories = () => {
       );
       const normalized: Category[] = base.map((c, i) => {
         const title = String(c.label || "");
-        const full = String(c.value || "").toLowerCase();
-        const leaf = full.split("/").pop() || full;
-        const href = `/shopping?category=${encodeURIComponent(leaf)}`;
+        const slug = String(c.value || "").toLowerCase();
+        const href = `/shopping?category=${encodeURIComponent(slug)}`;
         const img = imgs[i] || "/images/placeholder.png";
-        return { title, icon: img, img, href, slug: leaf } as any;
+        return { title, icon: img, img, href, slug } as any;
       });
       setItems(normalized);
     };
@@ -117,7 +116,12 @@ const Categories = () => {
           >
             {items.map((item, key) => (
               <SwiperSlide key={key}>
-                <SingleItem item={item} />
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden">
+                    <SingleItem item={item} />
+                  </div>
+                  <div className="text-center text-sm font-medium line-clamp-2 max-w-[8rem] md:max-w-[9rem]">{item.title}</div>
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>
