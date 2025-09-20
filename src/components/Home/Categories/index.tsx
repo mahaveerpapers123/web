@@ -117,7 +117,7 @@ const Categories = () => {
             {items.map((item, key) => (
               <SwiperSlide key={key}>
                 <div className="flex flex-col items-center gap-3">
-                  <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden flex items-center justify-center">
+                  <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden">
                     <SingleItem item={item} />
                   </div>
                   <div className="text-center text-sm font-medium line-clamp-2 max-w-[8rem] md:max-w-[9rem]">{item.title}</div>
