@@ -52,7 +52,7 @@ function matchesQuery(p: Product, q: string) {
 export default function ShopWithoutSidebar() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const category = searchParams.get("category") || "";
+  const rawCategory = searchParams.get("category") || "";
   const query = searchParams.get("query") || "";
   const pageParam = Number(searchParams.get("page")) || 1;
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -67,13 +67,21 @@ export default function ShopWithoutSidebar() {
       setLoading(true);
       setErr(null);
       try {
-        const url = `${API_BASE}/api/products${category ? `?category=${encodeURIComponent(category)}` : ""}`;
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) throw new Error(`Failed to fetch products (${res.status})`);
-        const json = await res.json();
-        const arr = coerceArray(json);
+        const trySlugs = rawCategory ? [rawCategory, rawCategory.split("/").pop() || rawCategory] : [""];
+        let picked: ApiProduct[] = [];
+        for (const s of trySlugs) {
+          const url = s ? `${API_BASE}/api/products?category=${encodeURIComponent(s)}` : `${API_BASE}/api/products`;
+          const res = await fetch(url, { cache: "no-store" });
+          if (!res.ok) continue;
+          const json = await res.json();
+          const arr = coerceArray(json);
+          if (arr.length > 0 || !s) {
+            picked = arr;
+            break;
+          }
+        }
         if (!cancelled) {
-          const normalized = arr.map(normalizeItem);
+          const normalized = picked.map(normalizeItem);
           setAllProducts(normalized);
         }
       } catch (e: any) {
@@ -86,7 +94,7 @@ export default function ShopWithoutSidebar() {
     return () => {
       cancelled = true;
     };
-  }, [category]);
+  }, [rawCategory]);
 
   const filtered = useMemo(() => {
     if (!query) return allProducts;
@@ -106,7 +114,7 @@ export default function ShopWithoutSidebar() {
     if (p < 1 || p > totalPages) return;
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(p));
-    if (category) params.set("category", category);
+    if (rawCategory) params.set("category", rawCategory);
     if (query) params.set("query", query);
     router.push(`/shopping?${params.toString()}`);
   };
@@ -132,8 +140,8 @@ export default function ShopWithoutSidebar() {
   const title =
     query
       ? `Results for "${query}"`
-      : category
-      ? category.replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase())
+      : rawCategory
+      ? (rawCategory.split("/").pop() || rawCategory).replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase())
       : "Explore All Products";
 
   if (loading) {
