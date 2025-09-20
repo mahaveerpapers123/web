@@ -97,7 +97,6 @@ const Categories = () => {
               </button>
             </div>
           </div>
-
           <Swiper
             ref={sliderRef}
             slidesPerView={4}
