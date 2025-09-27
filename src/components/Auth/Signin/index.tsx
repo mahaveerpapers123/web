@@ -41,6 +41,10 @@ const Signin = () => {
   const [b2cEmail, setB2cEmail] = useState("");
   const [b2cPassword, setB2cPassword] = useState("");
 
+  const [b2bEmail, setB2bEmail] = useState("");
+  const [b2bPassword, setB2bPassword] = useState("");
+  const [b2bGst, setB2bGst] = useState("");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"b2c" | "b2b">("b2c");
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
@@ -61,7 +65,7 @@ const Signin = () => {
   }, [canResendAt]);
   useEffect(() => {
     if (!canResendAt) return;
-    const t = setInterval(() => { }, 1000);
+    const t = setInterval(() => {}, 1000);
     return () => clearInterval(t);
   }, [canResendAt]);
 
@@ -249,7 +253,6 @@ const Signin = () => {
                       Logout
                     </button>
                   </div>
-
                 ) : (
                   <form
                     onSubmit={async (e) => {
@@ -289,6 +292,7 @@ const Signin = () => {
                         value={b2cEmail}
                         onChange={(e) => setB2cEmail(e.target.value)}
                         className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                        required
                       />
                     </div>
                     <div className="mb-5">
@@ -302,6 +306,7 @@ const Signin = () => {
                         value={b2cPassword}
                         onChange={(e) => setB2cPassword(e.target.value)}
                         className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                        required
                       />
                     </div>
                     <button
@@ -336,7 +341,34 @@ const Signin = () => {
                   </h2>
                   <p className="text-gray-4">Enter your partner credentials</p>
                 </div>
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    try {
+                      const res = await fetch(`${BASE_URL}/api/auth/login`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          email: b2bEmail,
+                          password: b2bPassword,
+                          gstNumber: b2bGst,
+                          userType: "b2b",
+                        }),
+                      });
+                      const data = await res.json();
+                      if (res.ok) {
+                        const userData = { name: data.name, userId: data.userId };
+                        localStorage.setItem("user", JSON.stringify(userData));
+                        setUser(userData);
+                        router.push("/");
+                      } else {
+                        alert(data.error || "Login failed");
+                      }
+                    } catch {
+                      alert("Something went wrong");
+                    }
+                  }}
+                >
                   <div className="mb-5">
                     <label htmlFor="b2b-email" className="block mb-2.5 text-white">
                       Email
@@ -345,7 +377,10 @@ const Signin = () => {
                       type="email"
                       id="b2b-email"
                       placeholder="Enter your business email"
+                      value={b2bEmail}
+                      onChange={(e) => setB2bEmail(e.target.value)}
                       className="rounded-lg border border-gray-7 bg-gray-2/20 text-white placeholder:text-gray-5 w-full py-3 px-5 outline-none duration-200 focus:border-blue focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                      required
                     />
                   </div>
                   <div className="mb-5">
@@ -357,7 +392,26 @@ const Signin = () => {
                       id="b2b-password"
                       placeholder="Enter your password"
                       autoComplete="on"
+                      value={b2bPassword}
+                      onChange={(e) => setB2bPassword(e.target.value)}
                       className="rounded-lg border border-gray-7 bg-gray-2/20 text-white placeholder:text-gray-5 w-full py-3 px-5 outline-none duration-200 focus:border-blue focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                      required
+                    />
+                  </div>
+                  <div className="mb-5">
+                    <label htmlFor="b2b-gst" className="block mb-2.5 text-white">
+                      Enter GST number
+                    </label>
+                    <input
+                      type="text"
+                      id="b2b-gst"
+                      placeholder="15-character GSTIN"
+                      value={b2bGst}
+                      onChange={(e) => setB2bGst(e.target.value.toUpperCase().slice(0, 15))}
+                      pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+                      title="Enter a valid 15-character GSTIN"
+                      className="rounded-lg border border-gray-7 bg-gray-2/20 text-white placeholder:text-gray-5 w-full py-3 px-5 outline-none duration-200 focus:border-blue focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                      required
                     />
                   </div>
                   <button
