@@ -65,7 +65,7 @@ const Signin = () => {
   }, [canResendAt]);
   useEffect(() => {
     if (!canResendAt) return;
-    const t = setInterval(() => {}, 1000);
+    const t = setInterval(() => { }, 1000);
     return () => clearInterval(t);
   }, [canResendAt]);
 
@@ -427,12 +427,13 @@ const Signin = () => {
                   >
                     Forgot your password?
                   </button>
-                  <p className="text-center mt-6">
-                      Don&apos;t have an account?
-                      <Link href="/signup" className="text-dark ease-out duration-200 hover:text-blue pl-2">
-                        Sign Up Now!
-                      </Link>
-                    </p>
+                  <p className="text-center mt-6 text-white">
+                    Don&apos;t have an account?
+                    <Link href="/signup" className="pl-2 text-white hover:text-white/90 ease-out duration-200">
+                      Sign Up Now!
+                    </Link>
+                  </p>
+
                 </form>
               </div>
             </div>
