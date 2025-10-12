@@ -8,9 +8,22 @@ import { Product } from "@/types/product";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://mahaveerpapersbe.vercel.app";
 
+type ExtProduct = Product & {
+  mrp?: number | string;
+  mahaveer_price?: number | string;
+  hsn_percentage?: number | string;
+  weight?: number | string;
+  length?: number | string;
+  width?: number | string;
+  height?: number | string;
+  b2b_price?: number | string;
+  b2c_price?: number | string;
+  imgs?: { previews?: string[]; thumbnails?: string[] };
+};
+
 type ApiProduct = any;
 
-const normalizeItem = (p: ApiProduct): Product & { imgs?: { previews?: string[]; thumbnails?: string[] } } => {
+const normalizeItem = (p: ApiProduct): ExtProduct => {
   const thumbs = p?.imgs?.thumbnails ?? [];
   const prevs = p?.imgs?.previews ?? [];
   const images = Array.isArray(p?.images) ? p.images : [];
@@ -36,13 +49,7 @@ function tokenize(s: string) {
 
 function matchesQuery(p: Product, q: string) {
   if (!q) return true;
-  const hay = [
-    p.name,
-    (p as any).model_name,
-    p.brand,
-    (p as any).category_slug,
-    p.description,
-  ]
+  const hay = [p.name, (p as any).model_name, p.brand, (p as any).category_slug, p.description]
     .map((x) => String(x ?? "").toLowerCase())
     .join(" ");
   const tokens = tokenize(q);
@@ -55,7 +62,7 @@ export default function ShopWithoutSidebar() {
   const rawCategory = searchParams.get("category") || "";
   const query = searchParams.get("query") || "";
   const pageParam = Number(searchParams.get("page")) || 1;
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<ExtProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [view, setView] = useState<"grid" | "list">("grid");
@@ -137,12 +144,41 @@ export default function ShopWithoutSidebar() {
     return out;
   }, [page, totalPages]);
 
-  const title =
-    query
-      ? `Results for "${query}"`
-      : rawCategory
-      ? (rawCategory.split("/").pop() || rawCategory).replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase())
-      : "Explore All Products";
+  const title = query
+    ? `Results for "${query}"`
+    : rawCategory
+    ? (rawCategory.split("/").pop() || rawCategory).replace(/-/g, " ").replace(/\b\w/g, (m) => m.toUpperCase())
+    : "Explore All Products";
+
+  const formatMoney = (v?: number | string) => {
+    const n = Number(v);
+    if (!isFinite(n) || n === 0) return "-";
+    return `₹${n.toFixed(2)}`;
+  };
+
+  const formatPercent = (v?: number | string) => {
+    const n = Number(v);
+    if (!isFinite(n)) return "-";
+    return `${n}%`;
+  };
+
+  const DetailBlock = ({ p }: { p: ExtProduct }) => {
+    return (
+      <div className="mt-3 bg-gray-50 border border-gray-200 rounded-md p-3 text-sm text-gray-700">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          <div className="flex justify-between gap-2"><span className="text-gray-500">MRP</span><span className="font-medium">{formatMoney(p.mrp)}</span></div>
+          <div className="flex justify-between gap-2"><span className="text-gray-500">Mahaveer</span><span className="font-medium">{formatMoney(p.mahaveer_price)}</span></div>
+          <div className="flex justify-between gap-2"><span className="text-gray-500">HSN %</span><span className="font-medium">{formatPercent(p.hsn_percentage)}</span></div>
+          <div className="flex justify-between gap-2"><span className="text-gray-500">B2B</span><span className="font-medium">{formatMoney(p.b2b_price)}</span></div>
+          <div className="flex justify-between gap-2"><span className="text-gray-500">B2C</span><span className="font-medium">{formatMoney(p.b2c_price)}</span></div>
+          <div className="flex justify-between gap-2"><span className="text-gray-500">Weight</span><span className="font-medium">{Number(p.weight) ? `${Number(p.weight)}` : "-"}</span></div>
+          <div className="flex justify-between gap-2"><span className="text-gray-500">Length</span><span className="font-medium">{Number(p.length) ? `${Number(p.length)}` : "-"}</span></div>
+          <div className="flex justify-between gap-2"><span className="text-gray-500">Width</span><span className="font-medium">{Number(p.width) ? `${Number(p.width)}` : "-"}</span></div>
+          <div className="flex justify-between gap-2"><span className="text-gray-500">Height</span><span className="font-medium">{Number(p.height) ? `${Number(p.height)}` : "-"}</span></div>
+        </div>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -219,6 +255,7 @@ export default function ShopWithoutSidebar() {
                         className="h-full [&_img:not([src*='icon-star'])]:h-[250px] [&_img:not([src*='icon-star'])]:w-auto [&_img:not([src*='icon-star'])]:object-contain"
                       >
                         <SingleGridItem item={item} />
+                        <DetailBlock p={item as ExtProduct} />
                       </div>
                     ) : (
                       <div
@@ -226,6 +263,7 @@ export default function ShopWithoutSidebar() {
                         className="[&_img:not([src*='icon-star'])]:h-[250px] [&_img:not([src*='icon-star'])]:w-auto [&_img:not([src*='icon-star'])]:object-contain"
                       >
                         <SingleListItem item={item} />
+                        <DetailBlock p={item as ExtProduct} />
                       </div>
                     )
                   )}
