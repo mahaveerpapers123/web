@@ -16,8 +16,6 @@ type ExtProduct = Product & {
   length?: number | string;
   width?: number | string;
   height?: number | string;
-  b2b_price?: number | string;
-  b2c_price?: number | string;
   imgs?: { previews?: string[]; thumbnails?: string[] };
 };
 
@@ -162,19 +160,46 @@ export default function ShopWithoutSidebar() {
     return `${n}%`;
   };
 
+  const formatNum = (v?: number | string) => {
+    const n = Number(v);
+    if (!isFinite(n) || n === 0) return "-";
+    return `${n}`;
+  };
+
   const DetailBlock = ({ p }: { p: ExtProduct }) => {
     return (
-      <div className="mt-3 bg-gray-50 border border-gray-200 rounded-md p-3 text-sm text-gray-700">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          <div className="flex justify-between gap-2"><span className="text-gray-500">MRP</span><span className="font-medium">{formatMoney(p.mrp)}</span></div>
-          <div className="flex justify-between gap-2"><span className="text-gray-500">Mahaveer</span><span className="font-medium">{formatMoney(p.mahaveer_price)}</span></div>
-          <div className="flex justify-between gap-2"><span className="text-gray-500">HSN %</span><span className="font-medium">{formatPercent(p.hsn_percentage)}</span></div>
-          <div className="flex justify-between gap-2"><span className="text-gray-500">B2B</span><span className="font-medium">{formatMoney(p.b2b_price)}</span></div>
-          <div className="flex justify-between gap-2"><span className="text-gray-500">B2C</span><span className="font-medium">{formatMoney(p.b2c_price)}</span></div>
-          <div className="flex justify-between gap-2"><span className="text-gray-500">Weight</span><span className="font-medium">{Number(p.weight) ? `${Number(p.weight)}` : "-"}</span></div>
-          <div className="flex justify-between gap-2"><span className="text-gray-500">Length</span><span className="font-medium">{Number(p.length) ? `${Number(p.length)}` : "-"}</span></div>
-          <div className="flex justify-between gap-2"><span className="text-gray-500">Width</span><span className="font-medium">{Number(p.width) ? `${Number(p.width)}` : "-"}</span></div>
-          <div className="flex justify-between gap-2"><span className="text-gray-500">Height</span><span className="font-medium">{Number(p.height) ? `${Number(p.height)}` : "-"}</span></div>
+      <div className="mt-3">
+        <div className="rounded-xl border border-gray-200 bg-white p-4">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4 md:grid-cols-3">
+            <div>
+              <p className="text-sm text-gray-500">HSN %</p>
+              <p className="text-base font-semibold text-gray-900">{formatPercent(p.hsn_percentage)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Mahaveer</p>
+              <p className="text-base font-semibold text-gray-900">{formatMoney(p.mahaveer_price)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">MRP</p>
+              <p className="text-base font-semibold text-gray-900">{formatMoney(p.mrp)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Length</p>
+              <p className="text-base font-semibold text-gray-900">{formatNum(p.length)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Width</p>
+              <p className="text-base font-semibold text-gray-900">{formatNum(p.width)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Height</p>
+              <p className="text-base font-semibold text-gray-900">{formatNum(p.height)}</p>
+            </div>
+            <div className="md:col-span-1">
+              <p className="text-sm text-gray-500">Weight</p>
+              <p className="text-base font-semibold text-gray-900">{formatNum(p.weight)}</p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -182,7 +207,7 @@ export default function ShopWithoutSidebar() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex h-screen items-center justify-center">
         <p>Loading products...</p>
       </div>
     );
@@ -190,7 +215,7 @@ export default function ShopWithoutSidebar() {
 
   if (err) {
     return (
-      <div className="flex justify-center items-center h-screen text-red-500">
+      <div className="flex h-screen items-center justify-center text-red-500">
         <p>Error: {err}</p>
       </div>
     );
@@ -200,13 +225,13 @@ export default function ShopWithoutSidebar() {
     <>
       <Breadcrumb title={title} pages={["shop", "/", "shop without sidebar"]} />
       <section
-        className="overflow-hidden relative pb-20 pt-5 lg:pt-20 xl:pt-28 bg-[#f3f4f6]"
+        className="relative overflow-hidden bg-[#f3f4f6] pb-20 pt-5 lg:pt-20 xl:pt-28"
         style={{ background: "linear-gradient(to right, #ccfbf1, #dcfce7, #fef9c3, #fecaca)" }}
       >
-        <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
+        <div className="mx-auto w-full max-w-[1170px] px-4 sm:px-8 xl:px-0">
           <div className="flex gap-7.5">
             <div className="w-full">
-              <div className="rounded-lg bg-white shadow-1 pl-3 pr-2.5 py-2.5 mb-6">
+              <div className="mb-6 rounded-lg bg-white pl-3 pr-2.5 py-2.5 shadow-1">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-wrap items-center gap-4">
                     <p>
@@ -220,7 +245,7 @@ export default function ShopWithoutSidebar() {
                       aria-label="grid"
                       className={`${
                         view === "grid" ? "bg-blue border-blue text-white" : "text-dark bg-gray-1 border-gray-3"
-                      } flex items-center justify-center w-10.5 h-9 rounded-[5px] border ease-out duration-200 hover:bg-blue hover:border-blue hover:text-white`}
+                      } flex h-9 w-10.5 items-center justify-center rounded-[5px] border duration-200 ease-out hover:border-blue hover:bg-blue hover:text-white`}
                     >
                       <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none">
                         <path d="M4.836 1.3125C4.16215 1.31248 3.60022 1.31246 3.15414 1.37244C2.6833 1.43574 2.2582 1.57499 1.91659 1.91659C1.57499 2.2582 1.43574 2.6833 1.37244 3.15414C1.31246 3.60022 1.31248 4.16213 1.3125 4.83598V4.914C1.31248 5.58785 1.31246 6.14978 1.37244 6.59586C1.43574 7.06671 1.57499 7.49181 1.91659 7.83341C2.2582 8.17501 2.6833 8.31427 3.15414 8.37757C3.60022 8.43754 4.16213 8.43752 4.83598 8.4375H4.914C5.58785 8.43752 6.14978 8.43754 6.59586 8.37757C7.06671 8.31427 7.49181 8.17501 7.83341 7.83341C8.17501 7.49181 8.31427 7.06671 8.37757 6.59586C8.43754 6.14978 8.43752 5.58787 8.4375 4.91402V4.83601C8.43752 4.16216 8.43754 3.60022 8.37757 3.15414C8.31427 2.6833 8.17501 2.2582 7.83341 1.91659C7.49181 1.57499 7.06671 1.43574 6.59586 1.37244C6.14979 1.31246 5.58789 1.31248 4.91405 1.3125H4.83601Z" />
@@ -231,7 +256,7 @@ export default function ShopWithoutSidebar() {
                       aria-label="list"
                       className={`${
                         view === "list" ? "bg-blue border-blue text-white" : "text-dark bg-gray-1 border-gray-3"
-                      } flex items-center justify-center w-10.5 h-9 rounded-[5px] border ease-out duration-200 hover:bg-blue hover:border-blue hover:text-white`}
+                      } flex h-9 w-10.5 items-center justify-center rounded-[5px] border duration-200 ease-out hover:border-blue hover:bg-blue hover:text-white`}
                     >
                       <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none">
                         <path d="M4.4234 0.899903C3.74955 0.899882 3.18763 0.899864 2.74155 0.959838C2.2707 1.02314 1.8456 1.16239 1.504 1.504C1.16239 1.8456 1.02314 2.2707 0.959838 2.74155C0.899864 3.18763 0.899882 3.74953 0.899903 4.42338V4.5014C0.899882 5.17525 0.899864 5.73718 0.959838 6.18326C1.02314 6.65411 1.16239 7.07921 1.504 7.42081C1.8456 7.76241 2.2707 7.90167 2.74155 7.96497C3.18763 8.02495 3.74953 8.02493 4.42339 8.02491H4.5014C5.17525 8.02493 14.7372 8.02495 15.1833 7.96497C15.6541 7.90167 16.0792 7.76241 16.4208 7.42081C16.7624 7.07921 16.9017 6.65411 16.965 6.18326C17.0249 5.73718 17.0249 5.17527 17.0249 4.50142V4.42341C17.0249 3.74956 17.0249 3.18763 16.965 2.74155C16.9017 2.2707 16.7624 1.8456 16.4208 1.504C16.0792 1.16239 15.6541 1.02314 15.1833 0.959838C14.7372 0.899864 5.17528 0.899882 4.50142 0.899903H4.4234Z" />
@@ -244,7 +269,7 @@ export default function ShopWithoutSidebar() {
                 <div
                   className={
                     view === "grid"
-                      ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch auto-rows-fr"
+                      ? "grid auto-rows-fr grid-cols-1 items-stretch gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
                       : "flex flex-col gap-7.5"
                   }
                 >
@@ -269,21 +294,21 @@ export default function ShopWithoutSidebar() {
                   )}
                 </div>
               ) : (
-                <div className="text-center py-20 bg-white rounded-lg">
+                <div className="rounded-lg bg-white py-20 text-center">
                   <h2 className="text-2xl font-semibold">No Products Found</h2>
                   <p className="mt-2 text-gray-600">Try a different search or category.</p>
                 </div>
               )}
               {totalPages > 1 && (
-                <div className="flex justify-center mt-15">
-                  <div className="bg-white shadow-1 rounded-md p-2">
+                <div className="mt-15 flex justify-center">
+                  <div className="rounded-md bg-white p-2 shadow-1">
                     <ul className="flex items-center">
                       <li>
                         <button
                           aria-label="Previous page"
                           onClick={() => handlePageChange(page - 1)}
                           disabled={page === 1}
-                          className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:bg-blue hover:text-white"
+                          className="flex h-9 w-8 items-center justify-center rounded-[3px] duration-200 ease-out disabled:text-gray-4 hover:bg-blue hover:text-white"
                         >
                           <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none">
                             <path d="M12.1782 16.1156C12.0095 16.1156 11.8407 16.0594 11.7282 15.9187L5.37197 9.45C5.11885 9.19687 5.11885 8.80312 5.37197 8.55L11.7282 2.08125C11.9813 1.82812 12.3751 1.82812 12.6282 2.08125C12.8813 2.33437 12.8813 2.72812 12.6282 2.98125L6.72197 9L12.6563 15.0187C12.9095 15.2719 12.9095 15.6656 12.6563 15.9187C12.4876 16.0312 12.347 16.1156 12.1782 16.1156Z" />
@@ -293,12 +318,12 @@ export default function ShopWithoutSidebar() {
                       {pageNumbers.map((p, i) => (
                         <li key={i}>
                           {p === "..." ? (
-                            <span className="flex py-1.5 px-3.5">...</span>
+                            <span className="flex px-3.5 py-1.5">...</span>
                           ) : (
                             <button
                               onClick={() => handlePageChange(p as number)}
-                              className={`flex py-1.5 px-3.5 duration-200 rounded-[3px] ${
-                                page === p ? "bg-blue text-white" : "hover:text-white hover:bg-blue"
+                              className={`flex rounded-[3px] px-3.5 py-1.5 duration-200 ${
+                                page === p ? "bg-blue text-white" : "hover:bg-blue hover:text-white"
                               }`}
                             >
                               {p}
@@ -311,7 +336,7 @@ export default function ShopWithoutSidebar() {
                           aria-label="Next page"
                           onClick={() => handlePageChange(page + 1)}
                           disabled={page === totalPages}
-                          className="flex items-center justify-center w-8 h-9 ease-out duration-200 rounded-[3px] disabled:text-gray-4 hover:text-white hover:bg-blue"
+                          className="flex h-9 w-8 items-center justify-center rounded-[3px] duration-200 ease-out disabled:text-gray-4 hover:bg-blue hover:text-white"
                         >
                           <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none">
                             <path d="M5.82197 16.1156C5.65322 16.1156 5.5126 16.0594 5.37197 15.9469C5.11885 15.6937 5.11885 15.3 5.37197 15.0469L11.2782 9L5.37197 2.98125C5.11885 2.72812 5.11885 2.33437 5.37197 2.08125C5.6251 1.82812 6.01885 1.82812 6.27197 2.08125L12.6282 8.55C12.8813 8.80312 12.8813 9.19687 12.6282 9.45L6.27197 15.9187C6.15947 16.0312 5.99072 16.1156 5.82197 16.1156Z" />

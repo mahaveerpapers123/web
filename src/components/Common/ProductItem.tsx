@@ -13,6 +13,23 @@ const ProductItem = ({ item }: { item: Product }) => {
   const { openModal } = useModalContext();
   const dispatch = useDispatch<AppDispatch>();
 
+  const mp = Number((item as any).mahaveer_price ?? (item as any).price ?? 0);
+  const mrp = Number((item as any).mrp ?? 0);
+  const hsnPct = (item as any).hsn_percentage;
+  const weight = (item as any).weight;
+  const length = (item as any).length;
+  const width = (item as any).width;
+  const height = (item as any).height;
+
+  const firstFromArray = Array.isArray((item as any).images) ? (item as any).images[0] : undefined;
+  const imagesMaybeString = !Array.isArray((item as any).images) ? ((item as any).images as unknown) : undefined;
+  const fallbackSingle = typeof imagesMaybeString === "string" ? imagesMaybeString : undefined;
+  const imageUrl =
+    (typeof firstFromArray === "string" && firstFromArray) ||
+    fallbackSingle ||
+    (typeof (item as any).image === "string" ? (item as any).image : undefined) ||
+    "/images/placeholder.png";
+
   const handleQuickViewUpdate = () => {
     dispatch(updateQuickView({ ...item }));
   };
@@ -25,14 +42,16 @@ const ProductItem = ({ item }: { item: Product }) => {
     } catch {
       existingCart = [];
     }
-    const itemIndex = existingCart.findIndex((i: any) => String(i.id) === String(item.id));
+    const idStr = String((item as any).id ?? (item as any)._id ?? "");
+    const itemIndex = existingCart.findIndex((i: any) => String(i.id) === idStr);
     if (itemIndex > -1) {
       existingCart[itemIndex].quantity += 1;
     } else {
       existingCart.push({
         ...item,
-        id: String(item.id),
+        id: idStr,
         name: item.name ?? "",
+        price: mp || 0,
         quantity: 1,
       });
     }
@@ -44,36 +63,43 @@ const ProductItem = ({ item }: { item: Product }) => {
     dispatch(updateproductDetails({ ...item }));
   };
 
-  const firstFromArray = Array.isArray((item as any).images) ? (item as any).images[0] : undefined;
-  const imagesMaybeString = !Array.isArray((item as any).images) ? ((item as any).images as unknown) : undefined;
-  const fallbackSingle = typeof imagesMaybeString === "string" ? imagesMaybeString : undefined;
-  const imageUrl =
-    (typeof firstFromArray === "string" && firstFromArray) ||
-    fallbackSingle ||
-    (typeof (item as any).image === "string" ? (item as any).image : undefined) ||
-    "/images/placeholder.png";
+  const formatMoney = (v?: number | string) => {
+    const n = Number(v);
+    if (!isFinite(n) || n <= 0) return "-";
+    return `₹${n.toFixed(2)}`;
+  };
 
-  const priceNumber = typeof (item as any).price === "number" ? (item as any).price : Number((item as any).price || 0);
+  const formatPct = (v?: number | string) => {
+    const n = Number(v);
+    if (!isFinite(n)) return "-";
+    return `${n}%`;
+  };
+
+  const formatNum = (v?: number | string) => {
+    const n = Number(v);
+    if (!isFinite(n) || n === 0) return "-";
+    return `${n}`;
+  };
 
   return (
-    <div className="group">
-      <div className="relative overflow-hidden flex items-center justify-center rounded-lg bg-[#F6F7FB] min-h-[270px] mb-4">
+    <div className="group rounded-lg bg-white shadow-1 p-3">
+      <div className="relative overflow-hidden flex items-center justify-center rounded-md bg-[#F6F7FB] min-h-[240px] mb-3">
         <Image
           src={imageUrl}
           alt={item.name ?? "product"}
-          width={250}
-          height={250}
-          className="h-[250px] w-auto object-contain"
+          width={260}
+          height={240}
+          className="h-[220px] w-auto object-contain"
           unoptimized={imageUrl?.startsWith("data:image/")}
         />
-        <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0">
+        <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-4 ease-linear duration-200 group-hover:translate-y-0">
           <button
             onClick={() => {
               openModal();
               handleQuickViewUpdate();
             }}
             aria-label="button for quick view"
-            className="flex items-center justify-center w-9 h-9 rounded-[5px] shadow-1 ease-out duration-200 text-dark bg-white hover:text-blue"
+            className="flex items-center justify-center w-9 h-9 rounded-[6px] shadow-1 ease-out duration-200 text-dark bg-white hover:text-blue"
           >
             <svg className="fill-current" width="16" height="16" viewBox="0 0 16 16">
               <path
@@ -90,13 +116,14 @@ const ProductItem = ({ item }: { item: Product }) => {
           </button>
           <button
             onClick={handleAddToCart}
-            className="inline-flex font-medium text-custom-sm py-[7px] px-5 rounded-[5px] bg-blue text-white hover:bg-blue-dark"
+            className="inline-flex font-medium text-custom-sm py-[7px] px-5 rounded-[6px] bg-blue text-white hover:bg-blue-dark"
           >
             Add to cart
           </button>
         </div>
       </div>
-      <div className="flex items-center gap-2.5 mb-2">
+
+      <div className="flex items-center gap-2.5 mb-1">
         <div className="flex items-center gap-1">
           {[...Array(5)].map((_, idx) => (
             <Image key={idx} src="/images/icons/icon-star.svg" alt="star icon" width={14} height={14} />
@@ -104,13 +131,48 @@ const ProductItem = ({ item }: { item: Product }) => {
         </div>
         <p className="text-custom-sm">({(item as any).reviews ?? 0})</p>
       </div>
-      <h3 className="font-medium text-dark hover:text-blue mb-1.5" onClick={handleProductDetails}>
+
+      <h3 className="font-medium text-dark hover:text-blue mb-1" onClick={handleProductDetails}>
         <Link href="/shop-details">{item.name ?? ""}</Link>
       </h3>
-      <span className="flex items-center gap-2 font-medium text-lg">
-        <span className="text-dark">₹{priceNumber}</span>
-        <span className="text-dark-4 line-through">₹{priceNumber ? (priceNumber / 0.8).toFixed(2) : "0.00"}</span>
-      </span>
+
+      <div className="flex items-baseline gap-2 mb-3">
+        <span className="font-semibold text-lg text-dark">{formatMoney(mp)}</span>
+        {mrp > 0 && <span className="text-dark-4 line-through text-sm">{formatMoney(mrp)}</span>}
+      </div>
+
+      <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          <div className="flex flex-col">
+            <span className="text-[11px] text-gray-500">HSN %</span>
+            <span className="text-[13px] font-semibold text-gray-800">{formatPct(hsnPct)}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] text-gray-500">Mahaveer</span>
+            <span className="text-[13px] font-semibold text-gray-800">{formatMoney(mp)}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] text-gray-500">MRP</span>
+            <span className="text-[13px] font-semibold text-gray-800">{formatMoney(mrp)}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] text-gray-500">Length</span>
+            <span className="text-[13px] font-semibold text-gray-800">{formatNum(length)}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] text-gray-500">Width</span>
+            <span className="text-[13px] font-semibold text-gray-800">{formatNum(width)}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[11px] text-gray-500">Height</span>
+            <span className="text-[13px] font-semibold text-gray-800">{formatNum(height)}</span>
+          </div>
+          <div className="flex flex-col col-span-2 md:col-span-3">
+            <span className="text-[11px] text-gray-500">Weight</span>
+            <span className="text-[13px] font-semibold text-gray-800">{formatNum(weight)}</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
