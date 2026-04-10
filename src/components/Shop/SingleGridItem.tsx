@@ -4,6 +4,7 @@ import { Product } from "@/types/product";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { addItemToCart } from "@/redux/features/cart-slice";
+import { updateproductDetails } from "@/redux/features/product-details";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -48,7 +49,9 @@ const normalizeImages = (raw: unknown): string[] => {
     const merged = `${arr[0]},${arr[1]}`;
     arr.splice(0, 2, merged);
   }
-  return arr;
+  return arr.map((u) =>
+    typeof u === "string" && u.startsWith("http://") ? u.replace("http://", "https://") : u
+  );
 };
 
 const currency = (n: number | string | null | undefined) => {
@@ -60,13 +63,39 @@ const SingleGridItem = ({ item }: { item: Product }) => {
   const dispatch = useDispatch<AppDispatch>();
   const userType = React.useMemo(getUserType, []);
   const images = React.useMemo(() => normalizeImages((item as any).images ?? (item as any).imgs), [item]);
-  const imageUrl = images[0] || "/images/placeholder.png";
 
-  const basePrice = typeof item.price === "number" ? item.price : Number(item.price || 0);
-  const priceToShow = userType === "B2B" ? (item.b2b_price ?? basePrice) : (item.b2c_price ?? basePrice);
+  const rawImageUrl = images[0] || "/images/placeholder.png";
+  const imageUrl = typeof rawImageUrl === "string" && rawImageUrl.trim() ? rawImageUrl.trim() : "/images/placeholder.png";
+  const isRemoteImage = /^https?:\/\//i.test(imageUrl);
+  const isDataImage = /^data:image\//i.test(imageUrl);
+
+  const basePrice = Number((item as any).mahaveer_price ?? item.price ?? 0);
+  const priceToShow = userType === "B2B" ? ((item as any).b2b_price ?? basePrice) : ((item as any).b2c_price ?? basePrice);
   const showStrike =
-    (userType === "B2B" && typeof item.b2b_price === "number" && item.b2b_price < basePrice) ||
-    (userType === "B2C" && typeof item.b2c_price === "number" && item.b2c_price < basePrice);
+    (userType === "B2B" && Number((item as any).b2b_price ?? 0) > 0 && Number((item as any).b2b_price) < basePrice) ||
+    (userType === "B2C" && Number((item as any).b2c_price ?? 0) > 0 && Number((item as any).b2c_price) < basePrice);
+
+  const productForDetails = React.useMemo(
+    () => ({
+      ...item,
+      image: imageUrl,
+      images,
+      imgs: { previews: images, thumbnails: images },
+      price: priceToShow,
+      mahaveer_price: (item as any).mahaveer_price ?? basePrice,
+      mrp: (item as any).mrp ?? "",
+      hsn_code: (item as any).hsn_code ?? "",
+      hsn_percentage: (item as any).hsn_percentage ?? "",
+      weight: (item as any).weight ?? "",
+      length: (item as any).length ?? "",
+      width: (item as any).width ?? "",
+      height: (item as any).height ?? "",
+      description: item.description ?? item.name ?? "",
+      b2b_price: (item as any).b2b_price,
+      b2c_price: (item as any).b2c_price,
+    }),
+    [item, imageUrl, images, priceToShow, basePrice]
+  );
 
   const handleAddToCart = () => {
     const cartItem = {
@@ -89,10 +118,24 @@ const SingleGridItem = ({ item }: { item: Product }) => {
     if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("cartUpdated"));
   };
 
+  const handleOpenDetails = () => {
+    try {
+      localStorage.setItem("productDetails", JSON.stringify(productForDetails));
+    } catch {}
+    dispatch(updateproductDetails(productForDetails as any));
+  };
+
   return (
     <div className="group">
       <div className="relative overflow-hidden flex items-center justify-center rounded-lg bg-white shadow-1 min-h-[270px] mb-4">
-        <Image src={imageUrl} alt={item.name || "Product Image"} width={250} height={250} style={{ objectFit: "contain" }} />
+        <Image
+          src={imageUrl}
+          alt={item.name || "Product Image"}
+          width={250}
+          height={250}
+          style={{ objectFit: "contain" }}
+          unoptimized={isRemoteImage || isDataImage}
+        />
         <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-5 ease-linear duration-200 group-hover:translate-y-0">
           <button
             onClick={handleAddToCart}
@@ -115,7 +158,9 @@ const SingleGridItem = ({ item }: { item: Product }) => {
       </div>
 
       <h3 className="font-medium text-dark ease-out duration-200 hover:text-blue mb-1.5">
-        <Link href={`/shop-details/${item.id}`}>{item.name}</Link>
+        <Link href={`/shop-details/${item.id}`} onClick={handleOpenDetails}>
+          {item.name}
+        </Link>
       </h3>
 
       <span className="flex items-center gap-2 font-medium text-lg">

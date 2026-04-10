@@ -1,4 +1,3 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     remotePatterns: [
@@ -10,7 +9,8 @@ const nextConfig = {
       { protocol: "https", hostname: "mahaveerpapersbe.vercel.app", pathname: "/uploads/**" },
       { protocol: "https", hostname: "mahaveerpapersbe.vercel.app", pathname: "/**" },
       { protocol: "https", hostname: "encrypted-tbn1.gstatic.com", pathname: "/**" },
-      { protocol: "https", hostname: "mahaveerpapers.blr1.digitaloceanspaces.com", pathname: "/**" }
+      { protocol: "https", hostname: "mahaveerpapers.blr1.digitaloceanspaces.com", pathname: "/**" },
+      { protocol: "https", hostname: "cdn.mahaveer.com", pathname: "/**" }
     ]
   }
 };

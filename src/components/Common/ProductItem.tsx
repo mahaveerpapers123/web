@@ -24,11 +24,16 @@ const ProductItem = ({ item }: { item: Product }) => {
   const firstFromArray = Array.isArray((item as any).images) ? (item as any).images[0] : undefined;
   const imagesMaybeString = !Array.isArray((item as any).images) ? ((item as any).images as unknown) : undefined;
   const fallbackSingle = typeof imagesMaybeString === "string" ? imagesMaybeString : undefined;
-  const imageUrl =
+
+  const rawImageUrl =
     (typeof firstFromArray === "string" && firstFromArray) ||
     fallbackSingle ||
     (typeof (item as any).image === "string" ? (item as any).image : undefined) ||
     "/images/placeholder.png";
+
+  const imageUrl = typeof rawImageUrl === "string" && rawImageUrl.trim() ? rawImageUrl.trim() : "/images/placeholder.png";
+  const isRemoteImage = /^https?:\/\//i.test(imageUrl);
+  const isDataImage = /^data:image\//i.test(imageUrl);
 
   const handleQuickViewUpdate = () => {
     dispatch(updateQuickView({ ...item }));
@@ -42,8 +47,10 @@ const ProductItem = ({ item }: { item: Product }) => {
     } catch {
       existingCart = [];
     }
+
     const idStr = String((item as any).id ?? (item as any)._id ?? "");
     const itemIndex = existingCart.findIndex((i: any) => String(i.id) === idStr);
+
     if (itemIndex > -1) {
       existingCart[itemIndex].quantity += 1;
     } else {
@@ -55,6 +62,7 @@ const ProductItem = ({ item }: { item: Product }) => {
         quantity: 1,
       });
     }
+
     localStorage.setItem("cartItems", JSON.stringify(existingCart));
     window.dispatchEvent(new Event("cartUpdated"));
   };
@@ -90,7 +98,7 @@ const ProductItem = ({ item }: { item: Product }) => {
           width={260}
           height={240}
           className="h-[220px] w-auto object-contain"
-          unoptimized={imageUrl?.startsWith("data:image/")}
+          unoptimized={isRemoteImage || isDataImage}
         />
         <div className="absolute left-0 bottom-0 translate-y-full w-full flex items-center justify-center gap-2.5 pb-4 ease-linear duration-200 group-hover:translate-y-0">
           <button
